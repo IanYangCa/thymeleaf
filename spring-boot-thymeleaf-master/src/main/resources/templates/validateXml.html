@@ -1,0 +1,32 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title>test</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.validateXml}" class="panel-title">Validation XML File</h1>
+        <div th:if="${message}">
+            <h2 th:text="${message}"/>
+        </div>
+        <div class="wb-frmvld" >
+            <form method="POST" enctype="multipart/form-data" action="/validateXML" id="validation">
+                <table style="margin-top:5px;">
+                    <tr><td><input type="file" name="file" id="file" required="required"/></td></tr>
+                    <tr><td><button type="submit" name="loadFile" th:text="#{button.validateXml}" class="btn btn-default" style="margin-top:3px; min-height:28px !important; padding:2px 5px 2px 5px;">Add row</button></td></tr>
+                </table>
+            </form>
+        </div>
+
+        <div>
+            <ul>
+                <li th:each="file : ${files}">
+                    <a th:href="${file}" th:text="${file}" />
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+sectionMenuList:
+     - sectionName: Main
+       sectionNameEn: Main
+       sectionNameFr: Fr_Main
+       menuLinks:
+           - text: main_item1
+             textEn: Validation XML
+             textFr: main_item1_fr
+             href: /validateXML
+             newWindow: false
+           - text: main_item2
+             textEn: main_item2_en
+             textFr: main_item2_fr
+             href: /main_item2
+             newWindow: false
+     - sectionName: Second
+       sectionNameEn: Second
+       sectionNameFr: Fr_Second
+       menuLinks:
+           - text: Second_item1
+             textEn: Second_item1_en
+             textFr: Second_item1_fr
+             href: /Second_item1
+             newWindow: false
+           - text: Second_item2
+             textEn: Second_item2_en
+             textFr: Second_item2_fr
+             href: /Second_item2
+             newWindow: false
