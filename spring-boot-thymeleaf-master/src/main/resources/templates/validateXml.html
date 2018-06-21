@@ -6,7 +6,7 @@
     <div layout:fragment="content" class="panel">
         <h1 th:text="#{title.validateXml}" class="panel-title">Validation XML File</h1>
         <div th:if="${message}">
-            <h2 th:text="${message}"/>
+            <h5 th:text="${message}"/>
         </div>
         <div class="wb-frmvld" >
             <form method="POST" enctype="multipart/form-data" action="/validateXML" id="validation">

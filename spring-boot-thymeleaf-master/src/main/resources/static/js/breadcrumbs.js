@@ -6,16 +6,15 @@
  */
 
 var MOBILE_SCREEN_SIZE = 767;
-var MIN_RESPONSIVE_SIZE = 4;
+var MIN_RESPONSIVE_SIZE = 6;
 var SECOND_INDEX = 1;  
 var ELLIPSES = "...";
 var ELLIPSES_DATA_STRING = "ellipsesData";
 var WB_BC_ID = "#wb-bc";
 
-jQuery(document).on('wb-ready.wb', 'resize', function(event) {
+$(document).on('wb-ready.wb',  function(event) {
   var list  = $(".breadcrumb").children();
   var size  = list.size();
- 
   if ( window.innerWidth <= MOBILE_SCREEN_SIZE && size >= MIN_RESPONSIVE_SIZE) {
       list.each(function( index ) {
          setResponsiveInfo(this, index, size - 2);

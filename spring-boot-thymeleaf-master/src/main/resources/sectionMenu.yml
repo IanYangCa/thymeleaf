@@ -13,17 +13,23 @@ sectionMenuList:
              textFr: main_item2_fr
              href: /main_item2
              newWindow: false
-     - sectionName: Second
-       sectionNameEn: Second
-       sectionNameFr: Fr_Second
+     - sectionName: Maintenance
+       sectionNameEn: Maintenance
+       sectionNameFr: Fr_Maintenance
        menuLinks:
            - text: Second_item1
-             textEn: Second_item1_en
-             textFr: Second_item1_fr
+             textEn: Schema
+             textFr: Fr_Schema
              href: /Second_item1
              newWindow: false
-           - text: Second_item2
-             textEn: Second_item2_en
+           - text: XML Stylesheet
+             textEn: XML Stylesheet
              textFr: Second_item2_fr
              href: /Second_item2
              newWindow: false
+           - text: Business Rule
+             textEn: Business Rule
+             textFr: Second_item2_fr
+             href: /Second_item2
+             newWindow: false
+             

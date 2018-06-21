@@ -6,11 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -27,19 +30,32 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import hp.hpfb.web.service.XmlSchemaValidatingService;
+
 @Controller
 public class ValidationXmlController {
-	private static final String VIEW_NAME = "hpfb.validator";
 	
-    private static final String UPLOADED_FOLDER = "c://temp//files//";
-    private Path root = Paths.get(UPLOADED_FOLDER);
+	@Value("${file.directory}")
+    private String UPLOADED_FOLDER;
+	
+	@Autowired
+	private XmlSchemaValidatingService service;
+	
+	
+    private Path root;
+
 	@RequestMapping(value="/validateXML", method=RequestMethod.GET)
-    public String validateXml(String name, Model model, HttpServletRequest req) throws Exception {
-        return "validateXml";
+    public String validateXml(Model model, HttpServletRequest req) throws Exception {
+        String userPath = UPLOADED_FOLDER + req.getSession().getId() + "/";
+        model.addAttribute("files", loadAll(Paths.get(userPath)).map(
+                path -> MvcUriComponentsBuilder.fromMethodName(ValidationXmlController.class,
+                        "serveFile", req.getSession().getId(), path.getFileName().toString()).build().toString())
+                .collect(Collectors.toList()));
+		return "validateXml";
     }
     @RequestMapping(value="/validateXML", method=RequestMethod.POST)
     public String validation(@RequestParam("file") MultipartFile file, Model model,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, HttpServletRequest req) {
     	if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
             return "redirect:uploadStatus";
@@ -49,30 +65,34 @@ public class ValidationXmlController {
 
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
+            String filename = UPLOADED_FOLDER + req.getSession().getId() + "//" + file.getOriginalFilename();
+            Path path = Paths.get(filename);
             Files.write(path, bytes, StandardOpenOption.CREATE);
 
-            redirectAttributes.addFlashAttribute("message",
+            model.addAttribute("message",
                     "You successfully uploaded '" + file.getOriginalFilename() + "'");
-
+            
+            List<String> errors = service.verifyXml(filename);
+            model.addAttribute("errorList", errors);
+            return "validatedResult";
         } catch (IOException e) {
             e.printStackTrace();
         }
-        model.addAttribute("files", loadAll().map(
+        String userPath = UPLOADED_FOLDER + req.getSession().getId() + "/";
+        model.addAttribute("files", loadAll(Paths.get(userPath) ).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(ValidationXmlController.class,
-                        "serveFile", path.getFileName().toString()).build().toString())
+                        "serveFile",  req.getSession().getId(), path.getFileName().toString()).build().toString())
                 .collect(Collectors.toList()));
         return "validateXml";
     }
-    @RequestMapping("/files/{filename:.+}")
+    @RequestMapping("/files/{directory:.+}/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+    public ResponseEntity<Resource> serveFile(@PathVariable String directory, @PathVariable String filename) {
 
         Resource file;
 		try {
-			file = loadAsResource(filename);
-	        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-	                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+			file = loadAsResource(directory + "//" + filename);
+	        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + file.getFilename() + "\"").body(file);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -87,8 +107,7 @@ public class ValidationXmlController {
                 return resource;
             }
             else {
-                throw new Exception(
-                        "Could not read file: " + filename);
+                throw new Exception("Could not read file: " + filename);
 
             }
         }
@@ -100,10 +119,12 @@ public class ValidationXmlController {
         return root.resolve(filename);
     }
 
-    public Stream<Path> loadAll(){
+    public Stream<Path> loadAll(Path root){
     	try {
 			return Files.walk(root, 1).filter(path -> !path.equals(root)).map(root::relativize);
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch(Throwable e) {
 			e.printStackTrace();
 		}
     	return null;

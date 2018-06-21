@@ -69,6 +69,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
 	 * application will always show the landing page breadcrumb. This property
 	 * can be overridden in the appliation.properties. Default is false.
 	 */
+	@Autowired
 	@Value("${show.landing.page.breadcrumb:true}")
 	private Boolean showLandingPageBreadcrumb;
 
@@ -265,7 +266,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
 					LocaleContextHolder.getLocale());
 		}
 
-		if (fullBreadCrumbList.size() > 3) {
+		if (fullBreadCrumbList.size() > 2) {
 			BreadCrumbLink breadcrumb = fullBreadCrumbList.get(fullBreadCrumbList.size() - LAST_BREAD_CRUMB);
 			if (!breadcrumbsConfigured() || breadcrumb.getViewName().equals(extractView(rootKey))) {
 				buildEclipticalCrumb(breadCrumbList, fullBreadCrumbList);
@@ -299,11 +300,15 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
 
 		breadCrumbList.add(checkAcronym(displayedBreadCrumbList.get(HOME_BREAD_CRUMB)));
 
-		BreadCrumbTitle breadCrumbShort = new BreadCrumbTitle();
-		breadCrumbShort.setTitleFR("...");
-		breadCrumbShort.setTitleEN("...");
-		breadCrumbShort.setTitle("...");
-		breadCrumbList.add(breadCrumbShort);
+		if(displayedBreadCrumbList.size() > 4 ) {
+			BreadCrumbTitle breadCrumbShort = new BreadCrumbTitle();
+			breadCrumbShort.setTitleFR("...");
+			breadCrumbShort.setTitleEN("...");
+			breadCrumbShort.setTitle("...");
+			breadCrumbList.add(breadCrumbShort);
+		} else {
+			breadCrumbList.add(checkAcronym(displayedBreadCrumbList.get(HOME_BREAD_CRUMB+1)));
+		}
 	}
 
 	/**
