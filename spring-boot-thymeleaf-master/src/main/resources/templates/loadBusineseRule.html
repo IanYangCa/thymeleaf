@@ -1,0 +1,29 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title th:text="#{title.loadBusineseRule}">test</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.loadBusineseRule}" class="panel-title">Load Businese Rule</h1>
+        <div th:if="${message}">
+            <h5 th:text="${message}"/>
+        </div>
+        <div class="wb-frmvld" >
+            <form method="POST" enctype="multipart/form-data" th:action="@{/admin/loadBusineseRule}" th:object="${userFile}" id="form">
+                <table style="margin-top:5px;">
+                    <tr><td><input type="file" th:field="*{file}" id="file" required="required"/></td></tr>
+                    <tr><td><button type="submit" name="loadFile" th:text="#{button.loadBusinese}" class="btn btn-default"  style="margin-top:3px; min-height:28px !important; padding:2px 5px 2px 5px;">Render XML</button></td></tr>
+                </table>
+            </form>
+        </div>
+        <div id="waiting" style="display:none;">
+        	<img id="loading-image" height="30px" width="30px" style="position:relative;left:90px;top:-30px;" th:src="@{/loading.gif}" th:alt="#{msg.validating}" />
+        	
+        </div>
+
+     </div>
+
+
+
+</body>
+</html>

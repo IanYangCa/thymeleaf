@@ -1,0 +1,14 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title>Generated HTML</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.renderXml.done}" class="panel-title">Render XML File Done</h1>
+        <div class="wb-frmvld" >
+        	<h2 th:text="#{page.render.xml.done}">Successful generated the HTML!!</h2>
+        	<a th:href="@{/xmlHtml}" th:text="#{label.openHtml}" target="_blank">test</a>
+        </div>
+     </div>
+</body>
+</html>

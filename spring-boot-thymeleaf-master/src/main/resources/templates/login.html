@@ -1,0 +1,19 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.login}" class="panel-title">Login As Administrator</h1>
+        <div class="wb-frmvld" >
+            <form method="POST" th:action="@{/login}" th:object="${user}" id="userForm">
+                <table style="margin-top:5px;">
+                    <tr><td><label for="userId" th:text="#{label.userId}"></label></td><td><input type="text" th:field="*{userId}" id="userId" required="required" th:value="${user.userId}"/></td></tr>
+                    <tr><td style="padding-top:10px;"><label th:text="#{label.password}" for="password">Local</label></td><td><input type="password" th:field="*{password}" id="password" required="required" th:value="${user.password}"/></td></tr>
+                    <tr><td>&nbsp;</td><td><button type="submit" name="loadFile" th:text="#{button.login}" class="btn btn-default" >Login</button></td></tr>
+                </table>
+            </form>
+        </div>
+     </div>
+</body>
+</html>

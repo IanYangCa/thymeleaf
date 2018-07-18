@@ -1,0 +1,45 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title>Validated Result</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.validatedResult}" class="panel-title">Validated Result</h1>
+        <div th:if="${errorList} == null" th:text="#{msg.validation.success}" class="label label-success">
+        	good
+        </div>
+        <div th:if="${errorList} != null">
+	        <form method="POST" action="/downloadXML" id="downloadXML">
+	        <button type="submit" class="button button-accent" style="margin:5px 0px 5px 10px;" name="download" value="download"><span th:text="#{button.download.xml.report}"/></button>
+	        <table class="table table-bordered">
+	        	<thead>
+	        		<tr class="active">
+	        			<th th:text="#{label.item}"/>
+	        			<th th:text="#{label.rule}"/>
+	        			<th th:text="#{label.severity}"/>
+	        			<th th:text="#{label.category}"/>
+	        			<th th:text="#{label.label}"/>
+	        			<th th:text="#{label.details}"/>
+	        			<th th:text="#{label.test}"/>
+	        			<th th:text="#{label.location}"/>
+	        		</tr>
+	        	</thead>
+	        	<tbody>
+					<tr th:each = "error, iterStat : ${errorList}">
+						<td th:text="${iterStat.index + 1 }"></td>
+						<td th:text="${error.rule}"/>
+						<td th:text="${error.severity}"/>
+						<td th:text="${error.category}"/>
+						<td th:text="${error.label}"/>
+						<td th:text="${error.details}"/>
+						<td th:text="${error.test}"/>
+						<td th:text="${error.location}"/>
+					</tr>
+	        	</tbody>
+	        </table>
+	        <button type="submit" class="button button-accent" style="margin:5px 0px 5px 10px;" name="download" value="download"><span th:text="#{button.download.xml.report}"/></button>
+			</form>
+        </div>
+	</div>
+</body>
+</html>
