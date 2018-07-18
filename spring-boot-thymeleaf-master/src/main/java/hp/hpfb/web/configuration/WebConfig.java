@@ -19,6 +19,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import ca.canada.ised.wet.cdts.components.wet.interceptor.WETLocaleChangeInterceptor;
 import ca.canada.ised.wet.cdts.components.wet.interceptor.WETTemplateInterceptor;
+import hp.hpfb.web.service.utils.Utilities;
 
 /**
  * Web configuration.
@@ -29,8 +30,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     /** The cdn template interceptor. */
     @Autowired
     private WETTemplateInterceptor cdnTemplateInterceptor;
+    @Autowired
+    private Utilities utilities;
     private static final String[] RESOURCE_LOCATIONS = {
-    		"classpath:/META-INF/resources/", "classpath:/resources/",
+    		"classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/images/",
     		"classpath:/static/", "classpath:/public/" };
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -69,11 +72,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
                 System.out.println("Session Destroyed, Session id:" + se.getSession().getId());
                 //remove temporary directory
                 File dir = new File("c://temp//files//" + se.getSession().getId());
-                if(dir != null && dir.exists()) {
-                	for( File file : dir.listFiles()) {
-                		file.delete();
-                	}
-                	dir.delete();
+                if(dir != null && dir.exists() && dir.isDirectory()) {
+                	utilities.removeDir(dir.getPath());
                 }
             }
         };

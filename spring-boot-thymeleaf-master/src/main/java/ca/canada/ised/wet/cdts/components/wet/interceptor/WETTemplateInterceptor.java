@@ -1,5 +1,15 @@
 package ca.canada.ised.wet.cdts.components.wet.interceptor;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +27,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,6 +41,7 @@ import ca.canada.ised.wet.cdts.components.wet.exit.ExitScript;
 import ca.canada.ised.wet.cdts.components.wet.exit.ExitTransaction;
 import ca.canada.ised.wet.cdts.components.wet.footer.ContactInformation;
 import ca.canada.ised.wet.cdts.components.wet.sidemenu.SideMenuConfig;
+import hp.hpfb.web.service.utils.Utilities;
 
 /**
  * The Class WETTemplateInterceptor populates the Spring Thymeleaf WET Template with properties from the cdn.properties
@@ -79,10 +91,27 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     /** The breadcrumbs service. */
     @Autowired
     private BreadcrumbService breadcrumbsService;
+    
+    @Autowired
+    private Utilities utilities;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
         throws Exception {
+    	if(request.getRequestURI().endsWith("xmlHtml")) {
+    		System.out.println("uri: " + request.getRequestURI());
+    		Path path = Paths.get(utilities.UPLOADED_FOLDER, request.getSession().getId(), Utilities.FILE_SEPARATOR,"temp.htm");
+    		File f = path.toFile();
+    		if(f != null & f.length() > 0) {
+    			response.setContentType(MediaType.TEXT_HTML.toString());
+    			response.setCharacterEncoding("UTF-8");
+    			PrintWriter writer = response.getWriter();
+    			Files.lines(path, StandardCharsets.UTF_8).forEach(writer:: print);
+    			writer.flush();
+    			writer.close();
+    			return false;
+    		}
+    	}
         return true;
     }
 

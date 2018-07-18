@@ -53,7 +53,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
 	private static final int HOME_BREAD_CRUMB = 0;
 
 	/** The Constant DEPARTMENT_HOME_BREAD_CRUMB. */
-	private static final int DEPARTMENT_HOME_BREAD_CRUMB = 1;
+	private static final int DEPARTMENT_HOME_BREAD_CRUMB = 2;
 
 	/** Logging instance. */
 	private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbServiceImpl.class);

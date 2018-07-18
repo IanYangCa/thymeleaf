@@ -3,10 +3,10 @@
         <title>Page Title</title>
 	   </head>
 	   <body>		
-        <div layout:fragment="content">
-          <div>This content will be included in the "content" div of the template.</div>
-          <div>Language: <span data-th-text="#{lang}">lang</span></div>
-          <div>This screen, leftMenu.html, uses <b>layout:decorator="layouts/leftmenu-layout"</b></div>
+        <div layout:fragment="content" class="panel">
+        	<h1 th:text="#{title.main}" class="panel-title">Health Canada Food Branch Applications</h1>
+          <div th:text="#{page.welcome}">Welcome</div>
+          <div th:text="#{page.something}">The application is under developing...</div>
         </div>      
       </body>
     </html>

@@ -1,19 +1,21 @@
 package hp.hpfb.web.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -30,60 +32,112 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import hp.hpfb.web.model.Parameters;
+import hp.hpfb.web.model.Report;
+import hp.hpfb.web.model.ReportSchema;
 import hp.hpfb.web.service.XmlSchemaValidatingService;
+import hp.hpfb.web.service.utils.Utilities;
 
 @Controller
 public class ValidationXmlController {
 	
-	@Value("${file.directory}")
-    private String UPLOADED_FOLDER;
-	
 	@Autowired
 	private XmlSchemaValidatingService service;
+	@Autowired
+	private Utilities utilities;
 	
-	
-    private Path root;
-
 	@RequestMapping(value="/validateXML", method=RequestMethod.GET)
     public String validateXml(Model model, HttpServletRequest req) throws Exception {
-        String userPath = UPLOADED_FOLDER + req.getSession().getId() + "/";
-        model.addAttribute("files", loadAll(Paths.get(userPath)).map(
-                path -> MvcUriComponentsBuilder.fromMethodName(ValidationXmlController.class,
-                        "serveFile", req.getSession().getId(), path.getFileName().toString()).build().toString())
-                .collect(Collectors.toList()));
+//        String userPath = utilities.UPLOADED_FOLDER + req.getSession().getId() + "/";
+//        model.addAttribute("files", loadAll(Paths.get(userPath)).map(
+//                path -> MvcUriComponentsBuilder.fromMethodName(ValidationXmlController.class,
+//                        "serveFile", req.getSession().getId(), path.getFileName().toString()).build().toString())
+//                .collect(Collectors.toList()));
 		return "validateXml";
     }
     @RequestMapping(value="/validateXML", method=RequestMethod.POST)
     public String validation(@RequestParam("file") MultipartFile file, Model model,
             RedirectAttributes redirectAttributes, HttpServletRequest req) {
     	if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-            return "redirect:uploadStatus";
+            redirectAttributes.addFlashAttribute("message", "Please select a file to validate");
+            return "redirect:validateXML";
         }
 
         try {
 
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
-            String filename = UPLOADED_FOLDER + req.getSession().getId() + "//" + file.getOriginalFilename();
+            String outputDir = utilities.UPLOADED_FOLDER + req.getSession().getId() + "//";
+            String filename = outputDir + file.getOriginalFilename();
+            File outDir = new File(outputDir);
+            if(outDir != null && outDir.exists()) {
+                utilities.removeFiles(outputDir);
+            } else {
+            	outDir.mkdir();
+            }
             Path path = Paths.get(filename);
             Files.write(path, bytes, StandardOpenOption.CREATE);
-
-            model.addAttribute("message",
-                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
+            if(utilities.isZipFile(filename)) {
+            	utilities.unzipFile(filename, outputDir);
+            	File temp = utilities.findXmlFile(outputDir);
+            	filename = outputDir + temp.getPath();
+            } 
+            
+//            model.addAttribute("message",
+//                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
             
             List<String> errors = service.verifyXml(filename);
-            model.addAttribute("errorList", errors);
+            if( errors.size() > 0 ) {
+            	List<ReportSchema> reports = utilities.buildSchemaErrorReport(errors);
+                utilities.writeSchemaErrorToReport(outputDir, reports);
+                model.addAttribute("errorList", reports);
+            } else {
+            	//build validate business rules
+            	utilities.rebuildBusinessRule();
+            	
+            	utilities.renderXml(utilities.SRC_RULES_DIR + "stripVestiges.xslt", filename, utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + "strip.xml", null);
+            	
+            	//retrieve parameters from xml file to properties.xml
+            	utilities.renderXml(utilities.SRC_RULES_DIR + Utilities.PROPERTITIES + Utilities.XSLT, filename, utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + Utilities.PROPERTITIES + ".xml", null);
+            	Parameters p = utilities.getParameters(utilities.UPLOADED_FOLDER + req.getSession().getId());
+            	Map<String, String> params = new HashMap<String, String>();
+            	
+            	params.put("display-language",  p.getDisplayLanguage());
+            	utilities.renderXml(utilities.DEST_RULE_DIR + Utilities.TARGET_BUSINESS_RULE_FILE + ".xsl", utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + "strip.xml", utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + "report0.xml", params);
+            	params.put("oid_loc", "file:/c:/temp/oids/");
+            	params.put("id",  file.getOriginalFilename());
+            	params.put("rule-file", utilities.SRC_RULES_DIR + "hc-rules.xml");
+            	params.put("property-file", "file:/" + utilities.UPLOADED_FOLDER + req.getSession().getId() + "/" + Utilities.PROPERTITIES + Utilities.XML);
+				utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", utilities.UPLOADED_FOLDER + req.getSession().getId() + "/" + "report0.xml", utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + "report.xml", params );
+				Report report = utilities.getReportMsgs(outputDir);
+				if(report.getReportMessage() != null && report.getReportMessage().size() > 0) {
+					model.addAttribute("errorList", report.getReportMessage());
+				}
+            }
             return "validatedResult";
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String userPath = UPLOADED_FOLDER + req.getSession().getId() + "/";
+        String userPath = utilities.UPLOADED_FOLDER + req.getSession().getId() + "/";
         model.addAttribute("files", loadAll(Paths.get(userPath) ).map(
                 path -> MvcUriComponentsBuilder.fromMethodName(ValidationXmlController.class,
                         "serveFile",  req.getSession().getId(), path.getFileName().toString()).build().toString())
                 .collect(Collectors.toList()));
         return "validateXml";
+    }
+    @RequestMapping(value="/downloadXML", method=RequestMethod.POST, params="download")
+    public ResponseEntity<Resource> downloadXml(Model model,
+             HttpServletRequest req) {
+        Resource file;
+		try {
+			file = loadAsResource(utilities.UPLOADED_FOLDER + req.getSession().getId() +  File.separator + Utilities.REPORT_XML);
+	        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + file.getFilename() + "\"").body(file);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+    	
     }
     @RequestMapping("/files/{directory:.+}/{filename:.+}")
     @ResponseBody
@@ -91,7 +145,7 @@ public class ValidationXmlController {
 
         Resource file;
 		try {
-			file = loadAsResource(directory + "//" + filename);
+			file = loadAsResource(directory + File.separator + filename);
 	        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + file.getFilename() + "\"").body(file);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -116,12 +170,13 @@ public class ValidationXmlController {
         }
     }
     public Path load(String filename) {
-        return root.resolve(filename);
+        return Paths.get(utilities.UPLOADED_FOLDER).resolve(filename);
     }
 
     public Stream<Path> loadAll(Path root){
+    	
     	try {
-			return Files.walk(root, 1).filter(path -> !path.equals(root)).map(root::relativize);
+       		return Files.walk(root, 1).filter(path -> !path.equals(root)).map(root::relativize);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch(Throwable e) {

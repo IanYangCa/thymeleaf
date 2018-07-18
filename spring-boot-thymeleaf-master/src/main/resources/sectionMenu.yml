@@ -8,28 +8,33 @@ sectionMenuList:
              textFr: main_item1_fr
              href: /validateXML
              newWindow: false
-           - text: main_item2
-             textEn: main_item2_en
-             textFr: main_item2_fr
-             href: /main_item2
+           - text: Render XML
+             textEn: Render XML
+             textFr: RenderXml_fr
+             href: #
              newWindow: false
      - sectionName: Maintenance
        sectionNameEn: Maintenance
        sectionNameFr: Fr_Maintenance
        menuLinks:
-           - text: Second_item1
-             textEn: Schema
-             textFr: Fr_Schema
-             href: /Second_item1
-             newWindow: false
            - text: XML Stylesheet
              textEn: XML Stylesheet
-             textFr: Second_item2_fr
-             href: /Second_item2
+             textFr: XML Stylesheet_fr
+             href: #
              newWindow: false
            - text: Business Rule
-             textEn: Business Rule
-             textFr: Second_item2_fr
-             href: /Second_item2
+             textEn: Load Business Rule
+             textFr: Business Rule_fr
+             href: /admin/loadBusineseRule
              newWindow: false
+     - sectionName: Other
+       sectionNameEn: Other
+       sectionNameFr: Fr_Other
+       menuLinks:
+           - text: logout
+             textEn: Logout
+             textFr: fr_Logout
+             href: /logout
+             newWindow: false
+
              
