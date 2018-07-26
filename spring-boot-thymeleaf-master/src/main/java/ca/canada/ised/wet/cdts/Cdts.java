@@ -1,18 +1,31 @@
 package ca.canada.ised.wet.cdts;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.context.annotation.Configuration;
 
-import hp.hpfb.web.service.utils.Utilities;
+import hp.hpfb.web.configuration.SpringSecurityConfig;
 
-@SpringBootApplication
+//@SpringBootApplication
+@Configuration
 @EnableAutoConfiguration
-public class Cdts {
+//public class Cdts {
+//
+//	public static void main(String[] args) {
+//		SpringApplication.run(Cdts.class, args);
+//	}
+//}
+public class Cdts extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Cdts.class, args);
-	}
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(new Object[]{Cdts.class, SpringSecurityConfig.class});
+    }
+
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(Cdts.class, args);
+    }
+
 }

@@ -2,10 +2,13 @@ package hp.hpfb.web.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 
 import hp.hpfb.web.handler.CdnAccessDeniedHandler;
 import hp.hpfb.web.handler.CdnAuthenticationFailureHandler;
@@ -13,7 +16,10 @@ import hp.hpfb.web.handler.CdnSuccessHandler;
 import hp.hpfb.web.service.utils.CdnPasswordProvider;
 
 @Configuration
-@EnableWebSecurity
+//@EnableGlobalAuthentication
+//@EnableWebSecurity
+@EnableWebSecurity(debug = false)
+@Order
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -36,7 +42,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable()
                 .authorizeRequests()
-					.antMatchers("/", "/login", "/leftMenu", "/validateXML", "/j_spring_security_check").permitAll()
+					.antMatchers("/*.gif","/", "/login", "/leftMenu", "/validateXML", "/j_spring_security_check", "/downloadXML", "/js/**").permitAll()
 					.antMatchers("/admin/**").hasAnyRole("ADMIN")
 					.anyRequest().authenticated()
                 .and()
@@ -59,10 +65,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
     	auth.authenticationProvider(cdnPasswordProvider);
-//        auth.inMemoryAuthentication()
-//		        .withUser("admin").password("password").roles("ADMIN")
-//		        .and()
-//                .withUser("user").password("password").roles("USER");
     }
 
 }

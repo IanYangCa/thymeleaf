@@ -41,6 +41,7 @@ import ca.canada.ised.wet.cdts.components.wet.exit.ExitScript;
 import ca.canada.ised.wet.cdts.components.wet.exit.ExitTransaction;
 import ca.canada.ised.wet.cdts.components.wet.footer.ContactInformation;
 import ca.canada.ised.wet.cdts.components.wet.sidemenu.SideMenuConfig;
+import hp.hpfb.web.handler.SideMenuHandler;
 import hp.hpfb.web.service.utils.Utilities;
 
 /**
@@ -68,8 +69,10 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     private WETSettings defaultCdnSettings;
 
     /** The side menu config. */
+//    @Autowired
+//    private SideMenuConfig sideMenuConfig;
     @Autowired
-    private SideMenuConfig sideMenuConfig;
+    private SideMenuHandler sideMenuHandler;
 
     /**
      * The show exit transaction link. This can be turned off in your application.properties
@@ -260,7 +263,8 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
             modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(),
                 modelAndView.getModelMap().get(WETModelKey.PAGE_SECTION_MENU.wetAttributeName()));
         } else {
-            modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(), sideMenuConfig.getSectionMenuList());
+//            modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(), sideMenuConfig.getSectionMenuList());
+            modelAndView.addObject(WETModelKey.SECTIONS.wetAttributeName(), sideMenuHandler.getSectionMenuList());
         }
     }
 

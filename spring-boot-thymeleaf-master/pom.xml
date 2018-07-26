@@ -18,7 +18,7 @@
 	<version>4.0.26.3-SNAPSHOT</version>
 
 	<name>WET CDTS Spring Boot Thymeleaf Starter</name>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		<java.version>1.8</java.version>
@@ -28,8 +28,12 @@
 		<!-- Release Plugin Info. -->
 		<git.project.id>wet-boew</git.project.id>
 		<git.repo.name>spring-boot-thymeleaf</git.repo.name>
-	</properties>
-
+      <!-- The main class to start by executing java -jar -->
+      <start-class>com.mkyong.SpringBootWebApplication</start-class>
+		<main.basedir>${basedir}/../..</main.basedir>
+		<m2eclipse.wtp.contextRoot>/IP602</m2eclipse.wtp.contextRoot>
+  	</properties>
+  
 	<distributionManagement>
 		<repository>
 			<id>${distributionManagement-internal-released-id}</id>
@@ -75,13 +79,39 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 			<optional>true</optional>
+			<exclusions>
+<!-- 				<exclusion>
+					<artifactId>logback-classic</artifactId>
+					<groupId>ch.qos.logback</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>log4j-over-slf4j</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+ -->				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+        <!-- marked the embedded servlet container as provided -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>
+<!-- https://mvnrepository.com/artifact/javax.activation/activation -->
+<dependency>
+    <groupId>javax.activation</groupId>
+    <artifactId>activation</artifactId>
+    <version>1.1</version>
+</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 			<exclusions>
 				<!-- Excluding embedded Tomcat. -->
-<!-- 				<exclusion>
+<!--  				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-tomcat</artifactId>
 				</exclusion>
@@ -89,14 +119,14 @@
 					<groupId>org.apache.tomcat.embed</groupId>
 					<artifactId>tomcat-embed-el</artifactId>
 				</exclusion>
- -->				<!-- doesn't play well on WAS -->
+ --> 				<!-- doesn't play well on WAS -->
 				<!-- https://github.com/spring-projects/spring-boot/issues/2149 -->
 				<!-- http://www.leveluplunch.com/blog/2014/05/31/spring-logging-issues-websphere/ -->
-				<exclusion>
+<!-- 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-logging</artifactId>
 				</exclusion>
-			</exclusions>
+ -->			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -134,7 +164,17 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons.lang3.version}</version>
 		</dependency>
-
+<!-- Add Log4j2 Dependency -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-log4j2</artifactId>
+</dependency>
+<!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
+<dependency>
+    <groupId>net.sf.saxon</groupId>
+    <artifactId>Saxon-HE</artifactId>
+    <version>9.8.0-12</version>
+</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -143,6 +183,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>IP602</finalName>
 		<pluginManagement>
 			<!-- <plugins> <plugin> <artifactId>maven-source-plugin</artifactId> <version>3.0.1</version> 
 				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-release-plugin</artifactId> 
@@ -156,7 +197,6 @@
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<configuration>
-						<fork>true</fork>
 						<mainClass>ca.canada.ised.wet.cdts.Cdts</mainClass>
 					</configuration>
 					<executions>
@@ -177,7 +217,7 @@
 							</manifest>
 						</archive>
 						<descriptorRefs>
-							<descriptorRef>jar-with-dependencies</descriptorRef>
+							<descriptorRef>war-with-dependencies</descriptorRef>
 						</descriptorRefs>
 					</configuration>
 					<executions>

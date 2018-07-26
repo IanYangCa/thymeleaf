@@ -48,8 +48,8 @@ public class BreadcrumbServiceTest extends AbstractMockMvcTest {
 
         breadcrumbsService.buildBreadCrumbs("greeting", "pageReq1");
         List<Object> bcList = breadcrumbsService.getBreadCrumbList();
-
-        Assert.isTrue(bcList.size() == 2);
+LOG.info("bcList size: " + bcList.size());
+        Assert.isTrue(bcList.size() == 3);
 
         BreadCrumbLink breadcrumb = (BreadCrumbLink) bcList.get(0);
         Assert.isTrue("Home".equals(breadcrumb.getTitle()));

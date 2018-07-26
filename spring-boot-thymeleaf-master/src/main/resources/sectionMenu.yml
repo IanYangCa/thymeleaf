@@ -8,11 +8,13 @@ sectionMenuList:
              textFr: main_item1_fr
              href: /validateXML
              newWindow: false
+             admin: false
            - text: Render XML
              textEn: Render XML
              textFr: RenderXml_fr
              href: #
              newWindow: false
+             admin: false
      - sectionName: Maintenance
        sectionNameEn: Maintenance
        sectionNameFr: Fr_Maintenance
@@ -22,11 +24,13 @@ sectionMenuList:
              textFr: XML Stylesheet_fr
              href: #
              newWindow: false
+             admin: true
            - text: Business Rule
              textEn: Load Business Rule
              textFr: Business Rule_fr
-             href: /admin/loadBusineseRule
+             href: /admin/loadBusinessRule
              newWindow: false
+             admin: true
      - sectionName: Other
        sectionNameEn: Other
        sectionNameFr: Fr_Other
@@ -36,5 +40,12 @@ sectionMenuList:
              textFr: fr_Logout
              href: /logout
              newWindow: false
+             admin: true
+           - text: login
+             textEn: Login
+             textFr: fr_Login
+             href: /login
+             newWindow: false
+             admin: false
 
              

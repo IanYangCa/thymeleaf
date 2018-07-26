@@ -75,14 +75,6 @@ public class CdnSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 			        }
 			    }
 			 
-//			    protected void clearAuthenticationAttributes(HttpServletRequest request) {
-//			        HttpSession session = request.getSession(false);
-//			        if (session == null) {
-//			            return;
-//			        }
-//			        session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-//			    }
-			 
 			    public void setRedirectStrategy(RedirectStrategy redirectStrategy) {
 			        this.redirectStrategy = redirectStrategy;
 			    }

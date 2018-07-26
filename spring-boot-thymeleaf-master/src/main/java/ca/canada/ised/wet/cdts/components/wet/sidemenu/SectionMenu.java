@@ -19,7 +19,6 @@ public class SectionMenu implements Serializable {
 	 */
 	private static final long serialVersionUID = 3870422089394027735L;
 
-	/** The displayed section name. */
 	private String sectionName;
 
 	/** The internal section name en. */

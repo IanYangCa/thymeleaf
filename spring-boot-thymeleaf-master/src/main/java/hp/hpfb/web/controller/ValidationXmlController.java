@@ -48,11 +48,6 @@ public class ValidationXmlController {
 	
 	@RequestMapping(value="/validateXML", method=RequestMethod.GET)
     public String validateXml(Model model, HttpServletRequest req) throws Exception {
-//        String userPath = utilities.UPLOADED_FOLDER + req.getSession().getId() + "/";
-//        model.addAttribute("files", loadAll(Paths.get(userPath)).map(
-//                path -> MvcUriComponentsBuilder.fromMethodName(ValidationXmlController.class,
-//                        "serveFile", req.getSession().getId(), path.getFileName().toString()).build().toString())
-//                .collect(Collectors.toList()));
 		return "validateXml";
     }
     @RequestMapping(value="/validateXML", method=RequestMethod.POST)
@@ -67,7 +62,7 @@ public class ValidationXmlController {
 
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
-            String outputDir = utilities.UPLOADED_FOLDER + req.getSession().getId() + "//";
+            String outputDir = utilities.UPLOADED_FOLDER + req.getSession().getId() + Utilities.FILE_SEPARATOR;
             String filename = outputDir + file.getOriginalFilename();
             File outDir = new File(outputDir);
             if(outDir != null && outDir.exists()) {
@@ -83,8 +78,6 @@ public class ValidationXmlController {
             	filename = outputDir + temp.getPath();
             } 
             
-//            model.addAttribute("message",
-//                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
             
             List<String> errors = service.verifyXml(filename);
             if( errors.size() > 0 ) {
@@ -95,20 +88,20 @@ public class ValidationXmlController {
             	//build validate business rules
             	utilities.rebuildBusinessRule();
             	
-            	utilities.renderXml(utilities.SRC_RULES_DIR + "stripVestiges.xslt", filename, utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + "strip.xml", null);
+            	utilities.renderXml(utilities.SRC_RULES_DIR + "stripVestiges.xslt", filename, outputDir + "strip.xml", null);
             	
             	//retrieve parameters from xml file to properties.xml
-            	utilities.renderXml(utilities.SRC_RULES_DIR + Utilities.PROPERTITIES + Utilities.XSLT, filename, utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + Utilities.PROPERTITIES + ".xml", null);
+            	utilities.renderXml(utilities.SRC_RULES_DIR + Utilities.PROPERTITIES + Utilities.XSLT, filename, outputDir + Utilities.PROPERTITIES + ".xml", null);
             	Parameters p = utilities.getParameters(utilities.UPLOADED_FOLDER + req.getSession().getId());
             	Map<String, String> params = new HashMap<String, String>();
             	
             	params.put("display-language",  p.getDisplayLanguage());
-            	utilities.renderXml(utilities.DEST_RULE_DIR + Utilities.TARGET_BUSINESS_RULE_FILE + ".xsl", utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + "strip.xml", utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + "report0.xml", params);
-            	params.put("oid_loc", "file:/c:/temp/oids/");
+            	utilities.renderXml(utilities.DEST_RULE_DIR + Utilities.TARGET_BUSINESS_RULE_FILE + ".xsl", outputDir + "strip.xml", outputDir + "report0.xml", params);
+            	params.put("oid_loc", "file://c:/temp/oids/");
             	params.put("id",  file.getOriginalFilename());
             	params.put("rule-file", utilities.SRC_RULES_DIR + "hc-rules.xml");
-            	params.put("property-file", "file:/" + utilities.UPLOADED_FOLDER + req.getSession().getId() + "/" + Utilities.PROPERTITIES + Utilities.XML);
-				utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", utilities.UPLOADED_FOLDER + req.getSession().getId() + "/" + "report0.xml", utilities.UPLOADED_FOLDER + req.getSession().getId() + File.separator + "report.xml", params );
+            	params.put("property-file", "file://" + outputDir + Utilities.PROPERTITIES + Utilities.XML);
+				utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
 				Report report = utilities.getReportMsgs(outputDir);
 				if(report.getReportMessage() != null && report.getReportMessage().size() > 0) {
 					model.addAttribute("errorList", report.getReportMessage());

@@ -33,8 +33,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired
     private Utilities utilities;
     private static final String[] RESOURCE_LOCATIONS = {
-    		"classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/images/",
-    		"classpath:/static/", "classpath:/public/" };
+    		"classpath:/META-INF/resources/", 
+    		"classpath:/resources/", 
+    		"classpath:/images/",
+    		"classpath:/static/", 
+    		"classpath:/public/" };
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
     	if (!registry.hasMappingForPattern("/**")) {
@@ -59,21 +62,23 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean                           // bean for http session listener
     public HttpSessionListener httpSessionListener() {
         return new HttpSessionListener() {
-            @Override
-            public void sessionCreated(HttpSessionEvent se) {               // This method will be called when session created
+        	// This method will be called when session created
+        	@Override
+            public void sessionCreated(HttpSessionEvent se) {               
                 System.out.println("Session Created with session id+" + se.getSession().getId());
-                File dir = new File("c://temp//files//" + se.getSession().getId());
-                if(dir != null && ! dir.exists()) {
+                File dir = new File(utilities.UPLOADED_FOLDER + se.getSession().getId());
+                if(! dir.exists()) {
                 	dir.mkdir();
                 }
             }
+        	// This method will be automatically called when session destroyed
             @Override
-            public void sessionDestroyed(HttpSessionEvent se) {         // This method will be automatically called when session destroyed
+            public void sessionDestroyed(HttpSessionEvent se) {         
                 System.out.println("Session Destroyed, Session id:" + se.getSession().getId());
                 //remove temporary directory
-                File dir = new File("c://temp//files//" + se.getSession().getId());
-                if(dir != null && dir.exists() && dir.isDirectory()) {
-                	utilities.removeDir(dir.getPath());
+                File dir = new File(utilities.UPLOADED_FOLDER + se.getSession().getId());
+                if(dir.exists() && dir.isDirectory()) {
+                	utilities.removeDir(dir);
                 }
             }
         };
@@ -81,19 +86,22 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Bean                   // bean for http session attribute listener
     public HttpSessionAttributeListener httpSessionAttributeListener() {
         return new HttpSessionAttributeListener() {
-            @Override
-            public void attributeAdded(HttpSessionBindingEvent se) {            // This method will be automatically called when session attribute added
+        	// This method will be automatically called when session attribute added
+        	@Override
+            public void attributeAdded(HttpSessionBindingEvent se) {            
                 System.out.println("Attribute Added following information");
                 System.out.println("Attribute Name:" + se.getName());
                 System.out.println("Attribute Value:" + se.getName());
             }
+        	// This method will be automatically called when session attribute removed
             @Override
-            public void attributeRemoved(HttpSessionBindingEvent se) {      // This method will be automatically called when session attribute removed
+            public void attributeRemoved(HttpSessionBindingEvent se) {      
                 System.out.println("attributeRemoved");
                 System.out.println("Attribute Name:" + se.getName());
             }
+            // This method will be automatically called when session attribute replace
             @Override
-            public void attributeReplaced(HttpSessionBindingEvent se) {     // This method will be automatically called when session attribute replace
+            public void attributeReplaced(HttpSessionBindingEvent se) {     
                 System.out.println("Attribute Replaced following information");
                 System.out.println("Attribute Name:" + se.getName());
                 System.out.println("Attribute Old Value:" + se.getValue());

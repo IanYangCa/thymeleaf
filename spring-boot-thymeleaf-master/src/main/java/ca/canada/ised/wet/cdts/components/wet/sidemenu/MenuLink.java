@@ -33,6 +33,8 @@ public class MenuLink implements Serializable {
 
     /** Does the link open in a new window? */
     private boolean newWindow;
+    
+    private boolean isAdmin;
 
     /**
      * Gets the menu text.
@@ -123,5 +125,13 @@ public class MenuLink implements Serializable {
     public void setNewWindow(boolean newWindow) {
         this.newWindow = newWindow;
     }
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 
 }

@@ -9,7 +9,7 @@
         	good
         </div>
         <div th:if="${errorList} != null">
-	        <form method="POST" action="/downloadXML" id="downloadXML">
+	        <form method="POST" action="downloadXML" id="downloadXML">
 	        <button type="submit" class="button button-accent" style="margin:5px 0px 5px 10px;" name="download" value="download"><span th:text="#{button.download.xml.report}"/></button>
 	        <table class="table table-bordered">
 	        	<thead>

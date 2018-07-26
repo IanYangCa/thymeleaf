@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(locations = {"classpath:sectionMenu.yml"})
 public class SideMenuConfig {
 
-    /** The section menu list. */
+	/** The section menu list. */
     private List<SectionMenu> sectionMenuList = new ArrayList<>();
 
     /**

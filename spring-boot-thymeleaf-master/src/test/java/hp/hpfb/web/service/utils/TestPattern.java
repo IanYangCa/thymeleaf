@@ -1,7 +1,13 @@
 package hp.hpfb.web.service.utils;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -20,5 +26,28 @@ public class TestPattern {
         } else {
         	System.out.println("Not Match!!");
         }
+	}
+	
+	@Test
+	public void testFormat() {
+		for(int i = 0 ; i < 10; i++) {
+			System.out.println("i: " + String.format(".%03d", i));
+		}
+	}
+	
+	@Test
+	public void testFileList() {
+		File dir = new File("c:/temp/rules");
+		String[] list = dir.list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.startsWith("business", 0);
+			} 
+			
+		});
+//		Arrays.asList(list).forEach(item -> System.out.println(item));
+		List<String> result = Arrays.stream(list).map(item -> "/businessRule/".concat(item)).collect(Collectors.toList());
+		result.forEach(item -> System.out.println(item));
 	}
 }

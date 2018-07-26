@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserFile {
 	private MultipartFile  file;
 	private Boolean local;
+	private String version;
 
 	public Boolean getLocal() {
 		return local;
@@ -20,6 +21,14 @@ public class UserFile {
 
 	public void setFile(MultipartFile  file) {
 		this.file = file;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 	
 }
