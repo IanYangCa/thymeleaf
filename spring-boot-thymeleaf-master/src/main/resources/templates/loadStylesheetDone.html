@@ -1,0 +1,19 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title th:text="#{title.loadStylesheet.done}">Generated HTML</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.loadStylesheet.done}" class="panel-title">Load new style sheet Done</h1>
+        <div class="wb-frmvld" >
+        	<h2 th:text="#{page.loadStylesheet.done}">Successful new Style sheet!!</h2>
+        	<div class="row col-xs-12">
+	        	<label th:text="#{label.stylesheet.version}">Stylesheet Version:</label>&nbsp;<span th:text="${userFile.version}"></span>
+        	</div>
+        	<div class="row col-xs-12">
+	        	<label th:text="#{label.stylesheet.name}">Stylesheet name:</label>&nbsp;<span th:text="${userFile.file.originalFilename}"></span>
+        	</div>
+        </div>
+     </div>
+</body>
+</html>

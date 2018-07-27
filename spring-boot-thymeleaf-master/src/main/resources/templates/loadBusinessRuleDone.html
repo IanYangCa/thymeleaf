@@ -1,0 +1,16 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title th:text="#{title.loadBusiness.done}">Generated HTML</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.loadBusiness.done}" class="panel-title">Render XML File Done</h1>
+        <div class="wb-frmvld" >
+        	<h2 th:text="#{page.loadBusiness.done}">Successful new businese rules!!</h2>
+        	<div class="row col-xs-12">
+	        	<label th:text="#{label.business.name}">Stylesheet name:</label>&nbsp;<span th:text="${userFile.file.originalFilename}"></span>
+        	</div>
+        </div>
+     </div>
+</body>
+</html>
