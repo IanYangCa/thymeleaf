@@ -13,8 +13,8 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,7 +56,7 @@ public class BreadcrumbServiceImpl implements BreadcrumbService, Serializable {
 	private static final int DEPARTMENT_HOME_BREAD_CRUMB = 2;
 
 	/** Logging instance. */
-	private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbServiceImpl.class);
+	private static final Logger LOG = LogManager.getLogger(BreadcrumbServiceImpl.class);
 
 	/**
 	 * The Constant HOME_AND_DEPARTMENT which breadcrumbs are to be returned

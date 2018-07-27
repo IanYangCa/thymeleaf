@@ -7,8 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CdnAccessDeniedHandler implements AccessDeniedHandler {
-	private static Logger logger = LoggerFactory.getLogger(CdnAccessDeniedHandler.class);
+	private static Logger logger = LogManager.getLogger(CdnAccessDeniedHandler.class);
 
 	@Override
 	public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,

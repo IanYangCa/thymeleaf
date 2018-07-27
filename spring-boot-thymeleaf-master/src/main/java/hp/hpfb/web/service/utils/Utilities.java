@@ -45,8 +45,8 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -71,11 +71,11 @@ public class Utilities {
 	public static final String FILE_SEPARATOR = "/";
 	private static final String SEPARATOR = "\n";
 	private static final String YES = "yes";
-	private static final String NO = "no";
+//	private static final String NO = "no";
 	private static final String UTF_8 = "UTF-8";
 	public static String TARGET_BUSINESS_RULE_FILE = "rule";
 	public static Pattern zipPattern = Pattern.compile(".+\\.zip$");
-	private static Logger logger = LoggerFactory.getLogger(Utilities.class);
+	private static Logger logger = LogManager.getLogger(Utilities.class);
 	public static String PROPERTITIES = "properties";
 
 	@Autowired

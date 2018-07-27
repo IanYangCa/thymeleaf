@@ -1,11 +1,7 @@
 package ca.canada.ised.wet.cdts.components.wet.interceptor;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.PrintWriter;
-import java.io.Reader;
-import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,8 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +36,6 @@ import ca.canada.ised.wet.cdts.components.wet.config.WETSettings;
 import ca.canada.ised.wet.cdts.components.wet.exit.ExitScript;
 import ca.canada.ised.wet.cdts.components.wet.exit.ExitTransaction;
 import ca.canada.ised.wet.cdts.components.wet.footer.ContactInformation;
-import ca.canada.ised.wet.cdts.components.wet.sidemenu.SideMenuConfig;
 import hp.hpfb.web.handler.SideMenuHandler;
 import hp.hpfb.web.service.utils.Utilities;
 
@@ -54,7 +49,7 @@ import hp.hpfb.web.service.utils.Utilities;
 public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
 
     /** Logging instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(WETTemplateInterceptor.class);
+    private static final Logger LOG = LogManager.getLogger(WETTemplateInterceptor.class);
 
 //    @Bean
 //    public MessageSource messageSource() {

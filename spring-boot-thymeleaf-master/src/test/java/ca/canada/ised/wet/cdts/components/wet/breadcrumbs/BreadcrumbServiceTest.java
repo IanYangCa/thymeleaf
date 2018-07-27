@@ -3,9 +3,9 @@ package ca.canada.ised.wet.cdts.components.wet.breadcrumbs;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.Assert;
@@ -19,7 +19,7 @@ import ca.canada.ised.wet.cdts.components.wet.config.WETResourceBundle;
 public class BreadcrumbServiceTest extends AbstractMockMvcTest {
 
     /** Logging instance. */
-    private static final Logger LOG = LoggerFactory.getLogger(BreadcrumbServiceTest.class);
+    private static final Logger LOG = LogManager.getLogger(BreadcrumbServiceTest.class);
 
     @Autowired
     private BreadcrumbService breadcrumbsService;

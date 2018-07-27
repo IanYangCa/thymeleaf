@@ -28,8 +28,8 @@
 		<!-- Release Plugin Info. -->
 		<git.project.id>wet-boew</git.project.id>
 		<git.repo.name>spring-boot-thymeleaf</git.repo.name>
-      <!-- The main class to start by executing java -jar -->
-      <start-class>com.mkyong.SpringBootWebApplication</start-class>
+		<!-- The main class to start by executing java -jar -->
+		<start-class>com.mkyong.SpringBootWebApplication</start-class>
 		<main.basedir>${basedir}/../..</main.basedir>
 		<m2eclipse.wtp.contextRoot>/IP602</m2eclipse.wtp.contextRoot>
   	</properties>
@@ -80,15 +80,7 @@
 			<artifactId>spring-boot-starter</artifactId>
 			<optional>true</optional>
 			<exclusions>
-<!-- 				<exclusion>
-					<artifactId>logback-classic</artifactId>
-					<groupId>ch.qos.logback</groupId>
-				</exclusion>
 				<exclusion>
-					<artifactId>log4j-over-slf4j</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
- -->				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-logging</artifactId>
 				</exclusion>
@@ -100,47 +92,21 @@
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
         </dependency>
-<!-- https://mvnrepository.com/artifact/javax.activation/activation -->
-<dependency>
-    <groupId>javax.activation</groupId>
-    <artifactId>activation</artifactId>
-    <version>1.1</version>
-</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.activation/activation -->
+		<dependency>
+		    <groupId>javax.activation</groupId>
+		    <artifactId>activation</artifactId>
+		    <version>1.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<!-- Excluding embedded Tomcat. -->
-<!--  				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.tomcat.embed</groupId>
-					<artifactId>tomcat-embed-el</artifactId>
-				</exclusion>
- --> 				<!-- doesn't play well on WAS -->
-				<!-- https://github.com/spring-projects/spring-boot/issues/2149 -->
-				<!-- http://www.leveluplunch.com/blog/2014/05/31/spring-logging-issues-websphere/ -->
-<!-- 				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-logging</artifactId>
-				</exclusion>
- -->			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<!-- <dependency> <groupId>org.glassfish</groupId> <artifactId>javax.servlet</artifactId> 
-			<version>${glassfish.version}</version> </dependency> --><!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-<!-- 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-			<scope>provided</scope>
-		</dependency> -->
 		<!-- Thymeleaf. -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -151,12 +117,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-			<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
-			<dependency>
-			    <groupId>org.springframework.boot</groupId>
-			    <artifactId>spring-boot-starter-security</artifactId>
-			    <version>${spring.boot.version}</version>
-			</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 
 		<!-- Commons lang for things like equals, hashcode, etc. -->
 		<dependency>
@@ -164,34 +129,27 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons.lang3.version}</version>
 		</dependency>
-<!-- Add Log4j2 Dependency -->
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-log4j2</artifactId>
-</dependency>
-<!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
-<dependency>
-    <groupId>net.sf.saxon</groupId>
-    <artifactId>Saxon-HE</artifactId>
-    <version>9.8.0-12</version>
-</dependency>
+		<!-- Add Log4j2 Dependency -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.saxon/Saxon-HE -->
+		<dependency>
+		    <groupId>net.sf.saxon</groupId>
+		    <artifactId>Saxon-HE</artifactId>
+		    <version>9.8.0-12</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
+		</dependency>	
 	</dependencies>
 
 	<build>
 		<finalName>IP602</finalName>
 		<pluginManagement>
-			<!-- <plugins> <plugin> <artifactId>maven-source-plugin</artifactId> <version>3.0.1</version> 
-				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-release-plugin</artifactId> 
-				<version>2.5.3</version> </plugin> </plugins> </pluginManagement> <plugins> 
-				<plugin> <artifactId>maven-source-plugin</artifactId> <executions> <execution> 
-				<id>attach-sources</id> <goals> <goal>jar</goal> </goals> </execution> </executions> 
-				</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-release-plugin</artifactId> 
-				<configuration> <goals>deploy</goals> </configuration> </plugin> </plugins> -->
 			<plugins>
 				<plugin>
 					<groupId>org.springframework.boot</groupId>

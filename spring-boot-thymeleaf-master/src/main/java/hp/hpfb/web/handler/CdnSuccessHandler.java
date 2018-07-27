@@ -8,8 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CdnSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    protected Log logger = LogFactory.getLog(this.getClass());
+    protected Logger logger = LogManager.getLogger(CdnSuccessHandler.class);
     
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
