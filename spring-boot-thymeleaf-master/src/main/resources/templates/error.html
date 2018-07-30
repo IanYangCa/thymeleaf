@@ -1,23 +1,13 @@
-<!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <div th:replace="fragments/header :: header-css"/>
-</head>
-<body>
-
-<div th:replace="fragments/header :: header"/>
-
-<div class="container">
-
-    <div class="starter-template">
-        <h1>Server Error</h1>
-        <div th:inline="text">Error happened on the Server, please contact the administrator. </div>
-    </div>
-
-</div>
-<!-- /.container -->
-
-<div th:replace="fragments/footer :: footer"/>
-
-</body>
-</html>
+    <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/layout">
+      <head>
+        <title>Errors</title>
+	   </head>
+	   <body>		
+        <div layout:fragment="content">
+	        <h1 th:text="page.error.title">Error in System</h1>
+	        <div th:if="${errors.length > 0}">
+	            <h5 th:text="${errors}"/>
+	        </div>
+        </div>
+      </body>
+    </html>
