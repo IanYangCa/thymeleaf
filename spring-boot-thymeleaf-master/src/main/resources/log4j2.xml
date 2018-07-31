@@ -10,14 +10,14 @@
         <Console name="ConsoleAppender" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
-        <File name="App-File-Appender" fileName="${log-path}/app_log.log" >
+        <File name="App-File-Appender" fileName="${log-path}/spl-validator.log" >
             <PatternLayout>
                 <pattern>
                     [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
                 </pattern>
             </PatternLayout>
         </File>
-        <File name="SpringBoot-File-Appender" fileName="${log-path}/springboot_log.log" >
+        <File name="SpringBoot-File-Appender" fileName="${log-path}/spl-validator-springboot.log" >
             <PatternLayout>
                 <pattern>
                     [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
@@ -26,21 +26,19 @@
         </File>
      </Appenders>
     <Loggers>
-        <Logger name="org.springframework" level="info" additivity="false">
+        <Logger name="org.springframework" level="INFO" additivity="false">
             <AppenderRef ref="SpringBoot-File-Appender"/>
-            <AppenderRef ref="ConsoleAppender"/>
         </Logger>
-        <Logger name="ca.canada.isedwet.cdts" level="info" additivity="false">
+        <Logger name="ca.canada.isedwet.cdts" level="INFO" additivity="false">
             <AppenderRef ref="App-File-Appender"/>
-            <AppenderRef ref="ConsoleAppender" />
         </Logger>
-        <Logger name="hp.hpfb.web" level="info" additivity="false">
+        <Logger name="hp.hpfb.web" level="INFO" additivity="false">
             <AppenderRef ref="App-File-Appender"/>
-            <AppenderRef ref="ConsoleAppender" />
         </Logger>
 
-        <Root level="info">
+        <Root level="INFO">
             <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="App-File-Appender"/>
         </Root>
     </Loggers>
 </Configuration>

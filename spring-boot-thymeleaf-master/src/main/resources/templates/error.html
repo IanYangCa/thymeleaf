@@ -5,9 +5,9 @@
 	   <body>		
         <div layout:fragment="content">
 	        <h1 th:text="page.error.title">Error in System</h1>
-	        <div th:if="${errors.length > 0}">
-	            <h5 th:text="${errors}"/>
-	        </div>
+	        <div>
+    			<h5 th:text="${errorMsg}">Error!!!!!!!!!!</h5>
+    	    </div>
         </div>
       </body>
     </html>

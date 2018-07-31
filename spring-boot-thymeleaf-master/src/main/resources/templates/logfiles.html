@@ -1,0 +1,27 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title th:text="#{title.list.logger.files}">test</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.list.logger.files}" class="panel-title">Logger files:</h1>
+         <div>
+         	<section>
+         	<fieldset>
+         	<legend><h3 th:text="#{page.current.logger.files}"></h3>&nbsp;&nbsp;&nbsp;&nbsp;<h5 th:text="${logDir}">test</h5></legend>
+            <ul>
+                <li th:each="file : ${files}">
+                    <a th:href="${file}" th:text="${file}" />
+                </li>
+            </ul>
+            </fieldset>
+            </section>
+        </div>
+
+
+     </div>
+
+
+
+</body>
+</html>
