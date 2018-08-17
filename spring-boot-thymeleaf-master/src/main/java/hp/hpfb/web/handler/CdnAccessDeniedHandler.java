@@ -22,7 +22,7 @@ public class CdnAccessDeniedHandler implements AccessDeniedHandler {
 	public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
 			org.springframework.security.access.AccessDeniedException arg2) throws IOException, ServletException {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
+		logger.info("CdnAccessDeniedHandler handler");
 		if (auth != null) {
 			logger.info("User '" + auth.getName() + "' attempted to access the protected URL: "
 					+ httpServletRequest.getRequestURI());
