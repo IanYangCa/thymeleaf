@@ -6,52 +6,58 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
-import hp.hpfb.web.model.UserFile;
 import hp.hpfb.web.service.utils.Utilities;
 
 @Controller
 public class LoadStylesheetController {
+	
+	private static final Logger logger = LogManager.getLogger(LoadStylesheetController.class);
+
 	@Autowired
 	private Utilities utilities;
 	@RequestMapping(value="/admin/loadStylesheet", method=RequestMethod.GET)
     public String renderXml(Model model, HttpServletRequest req) throws Exception {
-		model.addAttribute("userFile", new UserFile());
 		return "loadStylesheet";
     }
 	@RequestMapping(value="/admin/loadStylesheet", method=RequestMethod.POST)
-    public String renderXml(Model model, @ModelAttribute UserFile userFile, HttpServletRequest req) throws Exception {
-		String outputDir = utilities.LOCAL_XSLT_DIR + userFile.getVersion() + Utilities.FILE_SEPARATOR;
+    public ResponseEntity<Object> saveStylesheet(@RequestParam("version") String version, @RequestParam("files") MultipartFile file, Model model, HttpServletRequest req) throws Exception {
+		if(StringUtils.isEmpty(version)) {
+			return new ResponseEntity<>("Error: Veresion is Required!",HttpStatus.OK);
+		}
+		String outputDir = utilities.LOCAL_XSLT_DIR + version + Utilities.FILE_SEPARATOR;
 		File dir = new File(outputDir);
 		if(! dir.exists()) {
 			dir.mkdir();
 		}
-        String filename = outputDir + userFile.getFile().getOriginalFilename();
-        utilities.backupFile(filename);
-		Path path = Paths.get(filename);
-        byte[] bytes = userFile.getFile().getBytes();
-        Files.write(path, bytes, StandardOpenOption.CREATE);
-        model.addAttribute("userFile", userFile);
-		return "loadStylesheetDone";
+        logger.info("File name: " + file.getOriginalFilename());
+        Path userPath = Paths.get(outputDir, file.getOriginalFilename());
+        byte[] bytes = file.getBytes();
+        Files.write(userPath, bytes);
+		return new ResponseEntity<>(file.getOriginalFilename(),HttpStatus.OK);
     }
     @RequestMapping("/admin/stylesheet/{version:.+}/{filename:.+}")
     @ResponseBody
@@ -62,8 +68,7 @@ public class LoadStylesheetController {
 			file = loadAsResource(version + Utilities.FILE_SEPARATOR + filename);
 	        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\"" + file.getFilename() + "\"").body(file);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error(In LoadStylesheetController): Exception:" + e.getClass().getName() + "\n" + StringUtils.join(e.getStackTrace(), "\n"));
 		}
 		return null;
     }
@@ -77,7 +82,7 @@ public class LoadStylesheetController {
 			}
 	        return null;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error(In LoadStylesheetController): Exception:" + e.getClass().getName() + "\n" + StringUtils.join(e.getStackTrace(), "\n"));
 		}
 		return null;
     }
@@ -94,7 +99,7 @@ public class LoadStylesheetController {
     		});
     		return Arrays.stream(list).map(item -> "/stylesheet/".concat(item)).collect(Collectors.toList());
 		} catch(Throwable e) {
-			e.printStackTrace();
+			logger.error("Error(In LoadStylesheetController): Exception:" + e.getClass().getName() + "\n" + StringUtils.join(e.getStackTrace(), "\n"));
 		}
     	return null;
     }
@@ -107,7 +112,6 @@ public class LoadStylesheetController {
             }
             else {
                 throw new Exception("Could not read file: " + filename);
-
             }
         }
         catch (MalformedURLException e) {
