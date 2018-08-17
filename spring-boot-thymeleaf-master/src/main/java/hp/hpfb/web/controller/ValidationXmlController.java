@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.xml.sax.SAXException;
 
 import hp.hpfb.web.model.Parameters;
 import hp.hpfb.web.model.Report;
@@ -79,7 +81,14 @@ public class ValidationXmlController {
             } 
             
             
-            List<String> errors = service.verifyXml(filename);
+            List<String> errors;
+			try {
+				errors = service.verifyXml(filename);
+			} catch (SAXException e) {
+				errors = new ArrayList<String>(1);
+				errors.add("Bad XML Format!");
+				errors.add("Read XML File:Parse Exception:Bad XML Format!");
+			}
             if( errors.size() > 0 ) {
             	List<ReportSchema> reports = utilities.buildSchemaErrorReport(errors);
                 utilities.writeSchemaErrorToReport(outputDir, reports);
