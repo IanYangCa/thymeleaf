@@ -9,11 +9,11 @@
 </head>
 <body>
     <div layout:fragment="content" class="panel">
-		<h1 id="header-title">jQuery File Upload Plugin Test</h1>
+		<h1 id="header-title" th:text="#{title.loadOIDS}">jQuery File Upload Plugin Test</h1>
 		<div id="container">
 			<span class="btn btn-success fileinput-button">
 		        <i class="glyphicon glyphicon-plus"></i>
-		        <span>Select files...</span>
+		        <span th:text="#{label.selectFiles}">Select files...</span>
 		        <!-- The file input field used as target for the file upload widget -->
 		        <input id="fileupload" type="file" name="files" th:multiple="${true}" />
 		    </span>
@@ -33,27 +33,35 @@
 		<script th:src="@{/js/widget.js}"></script>
 		<script th:src="@{/js/jquery.iframe-transport.js}"></script>
 		<script th:src="@{/js/jquery.fileupload.js}"></script>
-<script data-th-inline="javascript">
-/*<![CDATA[*/
-	jQuery().ready(function(){
-    	$(function () {
-    	    'use strict';
-    	    // Change this to the location of your server-side upload handler:
-    	    var url = '/admin/loadOIDS';
-    	    $('#fileupload').fileupload({
-    	        url: url,
-    	        dataType: 'text',
-    	        done: function (e, data) {
-   	                $('<p/>').text(data.jqXHR.responseText).appendTo('#files');
-    	        },
-    	        fail: function(e, data){
-    	        	window.location.href="/login"
-    	    }).prop('disabled', !$.support.fileInput)
-    	        .parent().addClass($.support.fileInput ? undefined : 'disabled');
-    	});
-    });
-	/*]]>*/
-	</script>
+		<script data-th-inline="javascript">
+		/*<![CDATA[*/
+			jQuery().ready(function(){
+		    	$(function () {
+		    	    'use strict';
+		    	    // Change this to the location of your server-side upload handler:
+		    	    var url = '/admin/loadOIDS';
+		    	    $('#fileupload').fileupload({
+		    	        url: url,
+		    	        dataType: 'text',
+		    	        done: function (e, data) {
+		   	                $('<p/>').text(data.jqXHR.responseText).appendTo('#files');
+		    	        },
+		    	        fail: function(e, data){
+		    	        	result = $.parseJSON(data.jqXHR.responseText);
+		    	        	if(result.status == '401'){
+		        	        	window.location.href="/login"
+		    	        	} else if (result.status == '500'){
+		    	        		 $('<p/>').text(result.message).appendTo('#files');
+		    	        	} else {
+		    	        		window.location.href="/"
+		    	        	}
+		    	    	}
+		    	    }).prop('disabled', !$.support.fileInput)
+		    	        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+		    	});
+		    });
+			/*]]>*/
+			</script>
 
 	</th:block>
 </body>
