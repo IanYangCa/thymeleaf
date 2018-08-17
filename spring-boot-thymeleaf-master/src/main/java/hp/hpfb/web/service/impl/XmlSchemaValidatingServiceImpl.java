@@ -29,7 +29,7 @@ public class XmlSchemaValidatingServiceImpl implements XmlSchemaValidatingServic
 	@Autowired
 	private Utilities utilities;
 
-	public List<String> verifyXml(String xmlFile) {
+	public List<String> verifyXml(String xmlFile) throws SAXException {
 		return verifyXmlBySchema(utilities.getXSD(xmlFile), xmlFile);
 	}
 	public List<String> verifyXmlBySchema(String schemaFile, String xmlName) {

@@ -96,6 +96,9 @@ public class Utilities {
 	@Autowired
 	@Value("${file.xslt.directory}")
 	public String LOCAL_XSLT_DIR;
+	@Autowired
+	@Value("${file.oid.directory}")
+	public String OIDS_DIR;
 
 	public void removeFile(String filename) {
 		File file = new File(filename);
@@ -136,7 +139,7 @@ public class Utilities {
 		}
 	}
 
-	public String getXSD(String filePath) {
+	public String getXSD(String filePath) throws SAXException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
 		DocumentBuilder builder;
@@ -162,7 +165,10 @@ public class Utilities {
 				}
 			}
 		} catch (XPathExpressionException | ParserConfigurationException | SAXException | IOException e) {
-			logger.error("Error:  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
+			logger.error("Error:  " + e.getClass().getName() + "\n----\n" + StringUtils.join(e.getStackTrace(), SEPARATOR));
+			if(SAXException.class.isInstance(e)) {
+				throw new SAXException(e.getMessage());
+			}
 		}
 		return "";
 	}
