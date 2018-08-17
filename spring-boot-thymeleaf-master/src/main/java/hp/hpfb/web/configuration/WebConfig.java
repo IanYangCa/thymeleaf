@@ -8,6 +8,8 @@ import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +28,8 @@ import hp.hpfb.web.service.utils.Utilities;
  */
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
+
+	private static final Logger logger = LogManager.getLogger(WebConfig.class);
 
     /** The cdn template interceptor. */
     @Autowired
@@ -65,7 +69,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         	// This method will be called when session created
         	@Override
             public void sessionCreated(HttpSessionEvent se) {               
-                System.out.println("Session Created with session id+" + se.getSession().getId());
+        		logger.info("Session Created with session id+" + se.getSession().getId());
                 File dir = new File(utilities.UPLOADED_FOLDER + se.getSession().getId());
                 if(! dir.exists()) {
                 	dir.mkdir();
@@ -74,7 +78,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         	// This method will be automatically called when session destroyed
             @Override
             public void sessionDestroyed(HttpSessionEvent se) {         
-                System.out.println("Session Destroyed, Session id:" + se.getSession().getId());
+                logger.info("Session Destroyed, Session id:" + se.getSession().getId());
                 //remove temporary directory
                 File dir = new File(utilities.UPLOADED_FOLDER + se.getSession().getId());
                 if(dir.exists() && dir.isDirectory()) {
@@ -89,22 +93,22 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         	// This method will be automatically called when session attribute added
         	@Override
             public void attributeAdded(HttpSessionBindingEvent se) {            
-                System.out.println("Attribute Added following information");
-                System.out.println("Attribute Name:" + se.getName());
-                System.out.println("Attribute Value:" + se.getName());
+        		logger.info("Attribute Added following information");
+        		logger.info("Attribute Name:" + se.getName());
+        		logger.info("Attribute Value:" + se.getName());
             }
         	// This method will be automatically called when session attribute removed
             @Override
             public void attributeRemoved(HttpSessionBindingEvent se) {      
-                System.out.println("attributeRemoved");
-                System.out.println("Attribute Name:" + se.getName());
+            	logger.info("attributeRemoved");
+            	logger.info("Attribute Name:" + se.getName());
             }
             // This method will be automatically called when session attribute replace
             @Override
             public void attributeReplaced(HttpSessionBindingEvent se) {     
-                System.out.println("Attribute Replaced following information");
-                System.out.println("Attribute Name:" + se.getName());
-                System.out.println("Attribute Old Value:" + se.getValue());
+            	logger.info("Attribute Replaced following information");
+            	logger.info("Attribute Name:" + se.getName());
+            	logger.info("Attribute Old Value:" + se.getValue());
             }
         };
     }
