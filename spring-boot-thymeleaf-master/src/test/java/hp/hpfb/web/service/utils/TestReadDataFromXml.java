@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.SAXException;
 
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.AbstractMockMvcTest;
 import hp.hpfb.web.model.Parameters;
@@ -19,9 +20,15 @@ public class TestReadDataFromXml  extends AbstractMockMvcTest {
 	
 	@Test
 	public void testGetXSD() {
-		String result = utilities.getXSD("src/test/resources/testFile.xml");
-		System.out.println("Result:" + result);
-		assertTrue(condition.matcher(result).find());
+		String result;
+		try {
+			result = utilities.getXSD("src/test/resources/testFile.xml");
+			System.out.println("Result:" + result);
+			assertTrue(condition.matcher(result).find());
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
