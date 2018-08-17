@@ -1,0 +1,60 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title th:text="#{title.list.logger.files}">test</title>
+<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+ -->
+	<link rel="stylesheet" href="/css/jquery.fileupload.css" />
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+		<h1 id="header-title">jQuery File Upload Plugin Test</h1>
+		<div id="container">
+			<span class="btn btn-success fileinput-button">
+		        <i class="glyphicon glyphicon-plus"></i>
+		        <span>Select files...</span>
+		        <!-- The file input field used as target for the file upload widget -->
+		        <input id="fileupload" type="file" name="files" th:multiple="${true}" />
+		    </span>
+		    <br />
+		    <br />
+		    <fieldset>
+		    	<legend th:text="#{label.uploaded.files}"></legend>
+			    <div id="files" class="col-xs-12">
+			    </div>
+		    </fieldset>
+		</div>
+	</div>
+	<th:block layout:fragment="script">
+		<script th:src="@{https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_26/js/jquery/2.1.4/jquery.min.js}"></script>
+		<script th:src="@{https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_26/js/wet-boew.min.js}"></script>
+		<script th:src="@{https://www.canada.ca/etc/designs/canada/cdts/gcweb/v4_0_26/js/theme.min.js}"></script>
+		<script th:src="@{/js/widget.js}"></script>
+		<script th:src="@{/js/jquery.iframe-transport.js}"></script>
+		<script th:src="@{/js/jquery.fileupload.js}"></script>
+<script data-th-inline="javascript">
+/*<![CDATA[*/
+	jQuery().ready(function(){
+    	$(function () {
+    	    'use strict';
+    	    // Change this to the location of your server-side upload handler:
+    	    var url = '/admin/loadOIDS';
+    	    $('#fileupload').fileupload({
+    	        url: url,
+    	        dataType: 'text',
+    	        done: function (e, data) {
+   	                $('<p/>').text(data.jqXHR.responseText).appendTo('#files');
+    	        },
+    	        fail: function(e, data){
+    	        	window.location.href="/login"
+    	    }).prop('disabled', !$.support.fileInput)
+    	        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    	});
+    });
+	/*]]>*/
+	</script>
+
+	</th:block>
+</body>
+</html>
