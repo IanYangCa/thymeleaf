@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -79,7 +80,15 @@ public class LoadBusinessRuleController {
     				return name.startsWith("business", 0);
     			}
     		});
-    		return Arrays.stream(list).map(item -> "/admin/businessRule/".concat(item)).collect(Collectors.toList());
+    		String[] files = list;
+    		list = dir.list(new FilenameFilter() {
+    			@Override
+    			public boolean accept(File dir, String name) {
+    				return name.startsWith("hc-rules", 0);
+    			}
+    		});
+    		files = ArrayUtils.addAll(files, list);
+    		return Arrays.stream(files).map(item -> "/admin/businessRule/".concat(item)).collect(Collectors.toList());
 		} catch(Throwable e) {
 			e.printStackTrace();
 		}
