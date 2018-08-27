@@ -12,7 +12,6 @@
             <form method="POST" enctype="multipart/form-data" th:action="@{/renderXML}" th:object="${userFile}" id="validation">
                 <table style="margin-top:5px;">
                     <tr><td><input type="file" th:field="*{file}" id="file" required="required" class="fileinput"/></td></tr>
-                    <tr><td style="padding-top:10px;"><input type="checkbox" th:field="*{local}" id="local" required="required"/>&nbsp;<label th:text="#{label.by.local.xslt}" for="local">Local</label></td></tr>
                     <tr><td><button type="submit" name="loadFile" th:text="#{button.renderXml}" class="btn btn-default" th:onclick="${'jQuery(''#waiting'').show(); jQuery(this).html(''Rendering''); this.form.submit(); this.disabled=true;return false;'}" style="margin-top:3px; min-height:28px !important; padding:2px 5px 2px 5px;">Render XML</button></td></tr>
                 </table>
             </form>

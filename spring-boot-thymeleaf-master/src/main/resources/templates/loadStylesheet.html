@@ -52,9 +52,10 @@
 		<script th:src="@{/js/custom.js}"></script>
 		<script data-th-inline="javascript">
 		/*<![CDATA[*/
+		var url = [[@{/admin/loadStylesheet?version=}]];
 		function onChange(element, e){
 			 $('#fileupload').fileupload({
-			        url: '/admin/loadStylesheet?version=' + $("#version").val()
+			        url: url + $("#version").val()
 			 });
 			$('#filelist').empty();
 			$.getJSON("/admin/stylesheet/" + $(element).val(), function(data, status) {
@@ -69,7 +70,6 @@
 		    	$(function () {
 		    	    'use strict';
 		    	    // Change this to the location of your server-side upload handler:
-		    	    var url = '/admin/loadStylesheet?version=';
 		    	    $('#fileupload').fileupload({
 		    	        url: url,
 		    	        dataType: 'text',

@@ -1,7 +1,7 @@
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
 <head>
     <title>Validated Result</title>
-</head>
+	<link rel="stylesheet" data-th-href="@{/css/spl-validator.css}" /></head>
 <body>
     <div layout:fragment="content" class="panel">
         <h1 th:text="#{title.validatedResult}" class="panel-title">Validated Result</h1>
@@ -11,7 +11,7 @@
         <div th:if="${errorList} != null">
 	        <form method="POST" action="downloadXML" id="downloadXML">
 	        <button type="submit" class="button button-accent" style="margin:5px 0px 5px 10px;" name="download" value="download"><span th:text="#{button.download.xml.report}"/></button>
-	        <table class="table table-bordered">
+	        <table class="table table-bordered auto_table">
 	        	<thead>
 	        		<tr class="active">
 	        			<th th:text="#{label.item}"/>
@@ -33,7 +33,7 @@
 						<td th:text="${error.label}"/>
 						<td th:text="${error.details}"/>
 						<td th:text="${error.test}"/>
-						<td th:text="${error.location}"/>
+						<td th:text="${error.location}" class="word_break_all"/>
 					</tr>
 	        	</tbody>
 	        </table>
