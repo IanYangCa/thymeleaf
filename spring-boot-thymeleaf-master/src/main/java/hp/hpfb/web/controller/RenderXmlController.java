@@ -33,7 +33,7 @@ public class RenderXmlController {
 
 	@RequestMapping(value="/renderXML", method=RequestMethod.GET)
     public String renderXml(Model model, HttpServletRequest req) throws Exception {
-		model.addAttribute("renderXml", new UserFile());
+		model.addAttribute("userFile", new UserFile());
 		return "renderXml";
     }
 	
@@ -64,7 +64,7 @@ public class RenderXmlController {
 			String version = xsltFilename.substring(0, xsltFilename.lastIndexOf('/'));
 			version = version.substring(version.lastIndexOf('/') + 1);
 			xsltFilename = xsltFilename.substring(xsltFilename.lastIndexOf('/') + 1);
-			if(renderXml != null && renderXml.getLocal()) {
+			if(false) {//if(renderXml != null && renderXml.getLocal() != null && renderXml.getLocal()) {
 				utilities.renderXml(utilities.LOCAL_XSLT_DIR + version + Utilities.FILE_SEPARATOR + xsltFilename, outputDir + xmlFilename, outputDir + "temp.htm", null);
 			} else {
 				String xsltFileUrl = utilities.getXmlStylesheet(outputDir + xmlFilename);

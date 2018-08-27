@@ -35,15 +35,16 @@ public class LoadBusinessRuleController {
 	@Autowired
 	private Utilities utilities;
 	@RequestMapping(value="/admin/loadBusinessRule", method=RequestMethod.GET)
-    public String renderXml(Model model, HttpServletRequest req) throws Exception {
+    public String loadBusinessRule(Model model, HttpServletRequest req) throws Exception {
 		model.addAttribute("userFile", new UserFile());
       String userPath = utilities.SRC_RULES_DIR;
       model.addAttribute("files", loadAll(userPath));
 		return "loadBusinessRule";
     }
 	@RequestMapping(value="/admin/loadBusinessRule", method=RequestMethod.POST)
-    public String renderXml(Model model, @ModelAttribute UserFile userFile, HttpServletRequest req) throws Exception {
+    public String loadingBusinessRule(Model model, @ModelAttribute UserFile userFile, HttpServletRequest req) {
 		String outputDir = utilities.SRC_RULES_DIR;
+		try {
 		File dir = new File(outputDir);
 		if(dir == null || ! dir.exists()) {
 			dir.mkdir();
@@ -55,6 +56,10 @@ public class LoadBusinessRuleController {
         Files.write(path, bytes, StandardOpenOption.CREATE);
         model.addAttribute("userFile", userFile);
 		return "loadBusinessRuleDone";
+		} catch(Exception e) {
+			model.addAttribute("errorMsg",  "Errors:\n export dir: " + outputDir + " exception class: "+ e.getClass().getSimpleName() + " \n" + StringUtils.join(e.getStackTrace(), "\n"));
+			return "error";
+		}
     }
     @RequestMapping("/admin/businessRule/{filename:.+}")
     @ResponseBody

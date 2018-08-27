@@ -20,9 +20,9 @@ public class SideMenuHandler {
     private SideMenuConfig sideMenuConfig;
     public List<SectionMenu> getSectionMenuList() {
     	List<SectionMenu> menuList = sideMenuConfig.getSectionMenuList();
-		checkMenuLink(menuList);
+//		checkMenuLink(menuList);
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	if(auth.isAuthenticated() && ! "anonymousUser".equals(auth.getName())) {
+    	if(auth != null && auth.isAuthenticated() && ! "anonymousUser".equals(auth.getName())) {
     		return menuList;
     	} else {
     		List<SectionMenu> tempList = new ArrayList<SectionMenu>(menuList.size());

@@ -31,7 +31,6 @@ public class UploadOidsController {
 	private Utilities utilities;
 	@RequestMapping(value="/admin/loadOIDS", method=RequestMethod.GET)
     public String loadOids(Model model, HttpServletRequest req) throws Exception {
-		model.addAttribute("userFile", new UserFile());
         model.addAttribute("files", null);
 		return "uploadOIDS";
     }

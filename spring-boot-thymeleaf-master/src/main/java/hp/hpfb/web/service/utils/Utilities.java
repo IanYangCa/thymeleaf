@@ -175,14 +175,14 @@ public class Utilities {
 
 	public synchronized void rebuildBusinessRule() {
 		File ruleFile = new File(SRC_RULES_DIR + BUSINESS_RULE);
-		File destFile = new File(DEST_RULE_DIR + TARGET_BUSINESS_RULE_FILE + ".xsl");
+		File destFile = new File(DEST_RULE_DIR + TARGET_BUSINESS_RULE_FILE + Utilities.XSLT);
 		if (destFile.exists() && ruleFile.lastModified() < destFile.lastModified()) {
 			return;
 		}
 		String tempFileName = null;
 		String ruleFileName = ruleFile.getPath();
 		for (int i = 0; i < BUSINESS_RULE_XSLT.length; i++) {
-			tempFileName = DEST_RULE_DIR + TARGET_BUSINESS_RULE_FILE + i + ".xsl";
+			tempFileName = DEST_RULE_DIR + TARGET_BUSINESS_RULE_FILE + i + Utilities.XSLT;
 			buildRule(SRC_RULES_DIR + BUSINESS_RULE_XSLT[i], ruleFileName, tempFileName, true);
 			// if(i > 0) {
 			// (new File(ruleFileName)).delete();
