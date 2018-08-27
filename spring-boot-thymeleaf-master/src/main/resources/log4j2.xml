@@ -33,6 +33,7 @@
             <AppenderRef ref="App-File-Appender"/>
         </Logger>
         <Logger name="hp.hpfb.web" level="INFO" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="App-File-Appender"/>
         </Logger>
 

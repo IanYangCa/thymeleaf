@@ -12,7 +12,7 @@ sectionMenuList:
            - text: Render XML
              textEn: Render XML
              textFr: RenderXml_fr
-             href: #
+             href: /renderXML
              newWindow: false
              admin: false
      - sectionName: Maintenance
@@ -22,13 +22,19 @@ sectionMenuList:
            - text: XML Stylesheet
              textEn: XML Stylesheet
              textFr: XML Stylesheet_fr
-             href: #
+             href: /admin/loadStylesheet
              newWindow: false
              admin: true
            - text: Business Rule
              textEn: Load Business Rule
              textFr: Business Rule_fr
              href: /admin/loadBusinessRule
+             newWindow: false
+             admin: true
+           - text: OIDS
+             textEn: Load OIDS
+             textFr: Load OIDS_fr
+             href: /admin/loadOIDS
              newWindow: false
              admin: true
      - sectionName: Other
