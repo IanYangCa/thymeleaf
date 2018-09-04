@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "id",
     "contentStatus"
 })
-@XmlRootElement(name = "parameters")
+@XmlRootElement(name = "report_message")
 public class Parameters {
 
     @XmlElement(required = true)

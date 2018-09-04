@@ -111,6 +111,7 @@ public class ValidationXmlController {
             	params.put("oid_loc", utilities.OIDS_DIR);
             	params.put("id",  file.getOriginalFilename());
             	params.put("property-file", outputDir + Utilities.PROPERTITIES + Utilities.XML);
+            	params.put("rule-file",  utilities.SRC_RULES_DIR + "hc-rules" + Utilities.XML);
             	logger.info("oid_loc:" + utilities.OIDS_DIR);
             	utilities.renderXml(utilities.DEST_RULE_DIR + Utilities.TARGET_BUSINESS_RULE_FILE + Utilities.XSLT, outputDir + "strip.xml", outputDir + "report0.xml", params);
 				utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );

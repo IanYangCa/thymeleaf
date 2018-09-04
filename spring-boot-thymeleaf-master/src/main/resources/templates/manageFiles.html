@@ -1,0 +1,58 @@
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorator="layouts/leftmenu-layout">
+<head>
+    <title th:text="#{title.list.logger.files}">test</title>
+</head>
+<body>
+    <div layout:fragment="content" class="panel">
+        <h1 th:text="#{title.list.logger.files}" class="panel-title">Manage files:</h1>
+         <div id="container">
+			<div class="row">
+				<div class="col-xs-12"><br/></div>
+				<div class="col-xs-12">
+					<label th:text="#{label.manageFile.type}"></label>
+					<span>
+						<select id="sourceDir" required="required" th:onchange="'javascript:onChange(this, event);'">
+							<option value="0">Session Directory</option>
+							<option value="1">Business Rules Directory</option>
+							<option value="2">Current Rule Directory</option>
+							<option value="3">OIDS Directory</option>
+						</select>
+					</span>
+				</div>
+			</div>
+         	<section>
+         	<fieldset>
+         	<legend><h3 th:text="#{page.current.logger.files}"></h3></legend>
+            <ol id="filelist">
+            </ol>
+            </fieldset>
+            </section>
+        </div>
+
+
+     </div>
+	<th:block layout:fragment="script">
+		<script data-th-inline="javascript">
+		/*<![CDATA[*/
+		var url = [[@{/admin/manageFiles/}]];
+		var serverUrl = window.location;
+		jQuery().ready(function(){
+			$('#sourceDir').onChange($('#sourceDir'));
+	    });
+		function onChange(element, e){
+			$('#filelist').empty();
+			$.getJSON(url + $(element).val(), function(data, status) {
+					if(data != null && data.length > 0){
+						$.each(data, function(index, value){
+							$('#filelist').append('<li class="mrgn-bttm-sm"> &nbsp;<a class="btn btn-danger btn-xs" href="' + value + '/delete" target="_blank">' + [[#{button.delete}]] 
+							+ '</a>&nbsp;<a class="btn btn-primary btn-xs" href=' + value + '/download>' + [[#{button.download}]] + '</a>&nbsp;-->' + value + '</li>');
+						});
+					}
+				});
+		}
+		/*]]>*/
+		</script>
+	</th:block>
+
+</body>
+</html>
