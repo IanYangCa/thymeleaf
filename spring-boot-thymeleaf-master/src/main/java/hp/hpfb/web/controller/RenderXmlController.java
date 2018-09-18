@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import hp.hpfb.web.exception.SplException;
 import hp.hpfb.web.model.UserFile;
 import hp.hpfb.web.service.utils.Utilities;
 
@@ -40,10 +41,14 @@ public class RenderXmlController {
 	@RequestMapping(value="/renderXML", method=RequestMethod.POST)
 	public String renderXmlConfirm(@ModelAttribute UserFile renderXml, Model model, HttpServletRequest req) throws Exception {
 		String outputDir = utilities.UPLOADED_FOLDER + req.getSession().getId() + Utilities.FILE_SEPARATOR;
-		//ToDo load file to default directory
+        File outDir = new File(outputDir);
+        if(outDir != null && outDir.exists()) {
+            utilities.removeFiles(outputDir);
+        } else {
+        	outDir.mkdir();
+        }
         String filename = outputDir + renderXml.getFile().getOriginalFilename();
         byte[] bytes = renderXml.getFile().getBytes();
-        utilities.removeFiles(outputDir);
         Path path = Paths.get(filename);
         Files.write(path, bytes, StandardOpenOption.CREATE);
         if(utilities.isZipFile(filename)) {
@@ -58,36 +63,39 @@ public class RenderXmlController {
 			return "renderXml";
 		}
 		String xmlFilename = file.getPath();
-//		xmlFilename = xmlFilename.substring(xmlFilename.lastIndexOf(Utilities.FILE_SEPARATOR) + 1, xmlFilename.length() - 4);
 		if(file != null) {
-			String xsltFilename = utilities.getXmlStylesheet(outputDir + xmlFilename);
-			String version = xsltFilename.substring(0, xsltFilename.lastIndexOf('/'));
-			version = version.substring(version.lastIndexOf('/') + 1);
-			xsltFilename = xsltFilename.substring(xsltFilename.lastIndexOf('/') + 1);
-			if(false) {//if(renderXml != null && renderXml.getLocal() != null && renderXml.getLocal()) {
-				utilities.renderXml(utilities.LOCAL_XSLT_DIR + version + Utilities.FILE_SEPARATOR + xsltFilename, outputDir + xmlFilename, outputDir + "temp.htm", null);
-			} else {
-				String xsltFileUrl = utilities.getXmlStylesheet(outputDir + xmlFilename);
-				if(StringUtils.isNotBlank(xsltFileUrl)) {
-					try {
-						String rootUrl = xsltFileUrl.substring(0, xsltFileUrl.lastIndexOf('/') + 1);
-						String targetFilename = xsltFileUrl.substring(xsltFileUrl.lastIndexOf('/') + 1);
-						utilities.copyURLtoFile(xsltFileUrl, outputDir);
-						String importFilename = utilities.getImportFile(outputDir + targetFilename);
-						if(StringUtils.isNotBlank(importFilename)) {
-							utilities.copyURLtoFile(rootUrl + importFilename, outputDir);
-							importFilename = utilities.getIncludeFile(outputDir + importFilename);
+			try {
+				String xsltFilename = utilities.getXmlStylesheet(outputDir + xmlFilename);
+				String version = xsltFilename.substring(0, xsltFilename.lastIndexOf('/'));
+				version = version.substring(version.lastIndexOf('/') + 1);
+				xsltFilename = xsltFilename.substring(xsltFilename.lastIndexOf('/') + 1);
+				if(renderXml != null && renderXml.getLocal() != null && renderXml.getLocal()) {
+					utilities.renderXml(utilities.LOCAL_XSLT_DIR + version + Utilities.FILE_SEPARATOR + xsltFilename, outputDir + xmlFilename, outputDir + "temp.htm", null);
+				} else {
+					String xsltFileUrl = utilities.getXmlStylesheet(outputDir + xmlFilename);
+					if(StringUtils.isNotBlank(xsltFileUrl)) {
+						try {
+							String rootUrl = xsltFileUrl.substring(0, xsltFileUrl.lastIndexOf('/') + 1);
+							String targetFilename = xsltFileUrl.substring(xsltFileUrl.lastIndexOf('/') + 1);
+							utilities.copyURLtoFile(xsltFileUrl, outputDir);
+							String importFilename = utilities.getImportFile(outputDir + targetFilename);
 							if(StringUtils.isNotBlank(importFilename)) {
 								utilities.copyURLtoFile(rootUrl + importFilename, outputDir);
+								importFilename = utilities.getIncludeFile(outputDir + importFilename);
+								if(StringUtils.isNotBlank(importFilename)) {
+									utilities.copyURLtoFile(rootUrl + importFilename, outputDir);
+								}
 							}
+						} catch (IOException e) {
+							logger.error(StringUtils.join(e.getStackTrace(), '\n'));
+							return "error";
 						}
-					} catch (IOException e) {
-						logger.error(StringUtils.join(e.getStackTrace(), '\n'));
-						return "error";
+						utilities.renderXml(outputDir + xsltFilename, outputDir + file.getPath(), outputDir + "temp.htm", null);
 					}
-					utilities.renderXml(outputDir + xsltFilename, outputDir + file.getPath(), outputDir + "temp.htm", null);
-				}
 
+				}
+			} catch (SplException e) {
+				//TODO add later
 			}
 			
 		}
@@ -95,7 +103,7 @@ public class RenderXmlController {
     }
 	@RequestMapping(value="/xmlHtml", method=RequestMethod.GET)
 	public void xmlHtml(Model model, HttpServletRequest req, HttpServletResponse res) throws Exception {
-		//interrupt by interrupter
+		// add as url for get rendered html file
     }
 
 }

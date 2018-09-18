@@ -34,6 +34,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
@@ -54,10 +55,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSException;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
+import hp.hpfb.web.exception.SplException;
 import hp.hpfb.web.model.Parameters;
 import hp.hpfb.web.model.Report;
 import hp.hpfb.web.model.ReportSchema;
@@ -245,7 +248,7 @@ public class Utilities {
 		}
 	}
 
-	public void renderXml(String xsltFile, String xmlFile, String targetFile, Map<String, String> params) {
+	public void renderXml(String xsltFile, String xmlFile, String targetFile, Map<String, String> params) throws SplException {
 		try {
 			File stylesheet = new File(xsltFile);
 			if (stylesheet == null || !stylesheet.exists()) {
@@ -276,6 +279,9 @@ public class Utilities {
 			if (params != null) {
 				Set<String> keys = params.keySet();
 				for (String key : keys) {
+					if(params.get(key) == null) {
+						throw new SplException(key + " the value is missed");
+					}
 					transformer.setParameter(key, params.get(key));
 				}
 			}
@@ -301,12 +307,22 @@ public class Utilities {
 			out.flush();
 			out.close();
 			logger.info("Finished generated HTML");
+		} catch(IllegalArgumentException e) {
+			logger.error("Error(Exception):  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
+			throw new SplException("IllegalArgumentException throwed");
+		} catch(LSException e) {
+			logger.error("Error(Exception):  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
+			throw new SplException("LSException throwed");
+		} catch(TransformerException e) {
+			logger.error("Error(Exception):  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
+			throw new SplException("TransformerException throwed");
 		} catch (Exception e) {
 			logger.error("Error(Exception):  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
+			throw new SplException("Other Exception throwed");
 		}
 	}
 
-	public void generateProperties(String xmlFile, String xsltDir, String outputDir) {
+	public void generateProperties(String xmlFile, String xsltDir, String outputDir) throws SplException {
 		renderXml(xsltDir + "properties.xslt", xmlFile, outputDir + "properties.xml", null);
 	}
 

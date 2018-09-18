@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,10 +31,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.xml.sax.SAXException;
 
+import hp.hpfb.web.exception.SplException;
 import hp.hpfb.web.model.Parameters;
 import hp.hpfb.web.model.Report;
 import hp.hpfb.web.model.ReportSchema;
@@ -97,6 +96,7 @@ public class ValidationXmlController {
                 utilities.writeSchemaErrorToReport(outputDir, reports);
                 model.addAttribute("errorList", reports);
             } else {
+            	try {
             	//build validate business rules
             	utilities.rebuildBusinessRule();
             	
@@ -115,21 +115,28 @@ public class ValidationXmlController {
             	logger.info("oid_loc:" + utilities.OIDS_DIR);
             	utilities.renderXml(utilities.DEST_RULE_DIR + Utilities.TARGET_BUSINESS_RULE_FILE + Utilities.XSLT, outputDir + "strip.xml", outputDir + "report0.xml", params);
 				utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
+            	} catch ( SplException e) {
+           			errors = new ArrayList<String>(1);
+    				errors.add("Validation exception found!");
+    				errors.add("Read XML File:Parse Exception:" + e.getErrorMsg() + "!");
+                	List<ReportSchema> reports = utilities.buildSchemaErrorReport(errors);
+                    utilities.writeSchemaErrorToReport(outputDir, reports);
+                    model.addAttribute("errorList", reports);
+            	} catch(Exception e) {
+            		logger.error("Other Exception!" + e.getClass().getName());
+            	}
 				Report report = utilities.getReportMsgs(outputDir);
 				if(report.getReportMessage() != null && report.getReportMessage().size() > 0) {
 					model.addAttribute("errorList", report.getReportMessage());
 				}
+				
             }
             return "validatedResult";
         } catch (IOException e) {
             e.printStackTrace();
+            return "error";
         }
-        String userPath = utilities.UPLOADED_FOLDER + req.getSession().getId() + "/";
-        model.addAttribute("files", loadAll(Paths.get(userPath) ).map(
-                path -> MvcUriComponentsBuilder.fromMethodName(ValidationXmlController.class,
-                        "serveFile",  req.getSession().getId(), path.getFileName().toString()).build().toString())
-                .collect(Collectors.toList()));
-        return "validateXml";
+
     }
     @RequestMapping(value="/downloadXML", method=RequestMethod.POST, params="download")
     public ResponseEntity<Resource> downloadXml(Model model,
