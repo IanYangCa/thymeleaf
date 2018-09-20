@@ -94,6 +94,10 @@ public class ValidationXmlController {
 				errors = new ArrayList<String>(1);
 				errors.add("Bad XML Format!");
 				errors.add("Read XML File:Parse Exception:Bad XML Format!");
+			} catch (SplException e) {
+				errors = new ArrayList<String>(1);
+				errors.add("Bad XML Format!");
+				errors.add("Read XML File:Parse Exception:" + e.getErrorMsg());
 			}
             if( errors.size() > 0 ) {
             	List<ReportSchema> reports = utilities.buildSchemaErrorReport(errors);

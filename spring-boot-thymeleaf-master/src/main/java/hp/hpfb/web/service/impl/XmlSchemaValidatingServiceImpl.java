@@ -1,6 +1,7 @@
 package hp.hpfb.web.service.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import hp.hpfb.web.exception.SplException;
 import hp.hpfb.web.handler.LocalErrorHandler;
 import hp.hpfb.web.handler.Resolver;
 import hp.hpfb.web.service.XmlSchemaValidatingService;
@@ -29,10 +31,10 @@ public class XmlSchemaValidatingServiceImpl implements XmlSchemaValidatingServic
 	@Autowired
 	private Utilities utilities;
 
-	public List<String> verifyXml(String xmlFile) throws SAXException {
+	public List<String> verifyXml(String xmlFile) throws SAXException, SplException {
 		return verifyXmlBySchema(utilities.getXSD(xmlFile), xmlFile);
 	}
-	public List<String> verifyXmlBySchema(String schemaFile, String xmlName) {
+	public List<String> verifyXmlBySchema(String schemaFile, String xmlName) throws SplException {
 		LocalErrorHandler errorHandler = new LocalErrorHandler();
 		try {
 			schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -40,12 +42,24 @@ public class XmlSchemaValidatingServiceImpl implements XmlSchemaValidatingServic
 			System.err.println("Loaded schema validation provider " + schemaFactory.getClass().getName());
 			schemaFactory.setErrorHandler(errorHandler);
 			// create a grammar object.
-			Schema schemaGrammar;
-			schemaGrammar = StringUtils.startsWith(schemaFile, "http")? schemaFactory.newSchema(new URL(schemaFile)) : schemaFactory.newSchema(new File(schemaFile));
+			Schema schemaGrammar = null;
+			if(StringUtils.startsWith(schemaFile, "http")) {
+				URL url = new URL(schemaFile);
+				try {
+					url.openConnection();
+					schemaGrammar = schemaFactory.newSchema(url);
+				} catch(IOException e) {
+					
+				}
+			} else {
+				File file = new File(schemaFile);
+				if(file != null && file.exists()) {
+					schemaGrammar = schemaFactory.newSchema(file);
+				}
+			}
 			if (schemaGrammar == null) {
 				System.out.println("schemaGrammar==null");
-				errorHandler.getErrors().add(0, "Schema Grammar File not found!");
-				return errorHandler.getErrors();
+				throw new SplException("Schema Grammar File not found!");
 			}
 
 			Resolver resolver = new Resolver();

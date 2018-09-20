@@ -163,8 +163,13 @@ public class Utilities {
 			for (int i = 0; i < node.getAttributes().getLength(); i++) {
 				attr = node.getAttributes().item(i).toString();
 				if (attr.startsWith("xsi:schemaLocation")) {
-					attr = attr.substring(attr.indexOf("http"));
-					return attr.substring(0, attr.length() - 1);
+					if(attr.indexOf("http") > -1) {
+						attr = attr.substring(attr.indexOf("http"));
+						return attr.substring(0, attr.length() - 1);
+					} else {
+						String[] attrs = StringUtils.split(attr, ' ');
+						return attrs[attrs.length - 1];
+					}
 				}
 			}
 		} catch (XPathExpressionException | ParserConfigurationException | SAXException | IOException e) {
