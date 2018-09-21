@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.AbstractMockMvcTest;
+import hp.hpfb.web.exception.SplException;
 
 public class TestBuildBusinessRule extends AbstractMockMvcTest {
 	@Autowired
@@ -12,7 +13,7 @@ public class TestBuildBusinessRule extends AbstractMockMvcTest {
 	@Autowired
 	public Environment env;
 	@Test
-	public void testBuildBusinessRule() {
+	public void testBuildBusinessRule() throws SplException {
 		System.out.println("test:" + utilities.UPLOADED_FOLDER);
 		utilities.rebuildBusinessRule();
 		String testFile = getClass().getClassLoader().getResource("testFile.xml").getPath();

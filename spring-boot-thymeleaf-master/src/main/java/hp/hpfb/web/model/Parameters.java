@@ -52,24 +52,24 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
     "id",
     "contentStatus"
 })
-@XmlRootElement(name = "report_message")
+@XmlRootElement(name = "report_message", namespace="")
 public class Parameters {
 
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String language;
-    @XmlElement(name = "display-language", required = true)
+    @XmlElement(name = "display-language", required = true, namespace="")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
     protected String displayLanguage;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected BigInteger doctype;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected BigInteger template;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected String id;
-    @XmlElement(name = "content_status", required = true)
+    @XmlElement(name = "content_status", required = true, namespace="")
     protected BigInteger contentStatus;
 
     /**

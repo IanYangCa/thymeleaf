@@ -59,7 +59,7 @@ public class XmlSchemaValidatingServiceImpl implements XmlSchemaValidatingServic
 			}
 			if (schemaGrammar == null) {
 				System.out.println("schemaGrammar==null");
-				throw new SplException("Schema Grammar File not found!");
+				throw new SplException("SYSTEM-1:SPL-2-003:" + schemaFile);
 			}
 
 			Resolver resolver = new Resolver();
@@ -89,18 +89,9 @@ public class XmlSchemaValidatingServiceImpl implements XmlSchemaValidatingServic
 			int errorCount = errorHandler.getErrorCount();
 			if (errorCount == 0) {
 				System.err.println("Schema Validation successful");
-//				errorHandler.getErrors().add(0, "Schema Validation successful!");
 				return errorHandler.getErrors();
 			} else {
-//				String errorFileName = xmlFile.getPath().substring(0, xmlFile.getPath().lastIndexOf(File.separator)) + File.separator + LocalErrorHandler.SCHEMA_ERROR_FILE;
-//				FileWriter errorFile = new FileWriter(errorFileName);
-//				for(String item : errorHandler.getErrors()) {
-//					errorFile.write(item);
-//				}
-//				errorFile.flush();
-//				errorFile.close();
 				System.err.println("Schema Validation complete: found " + errorCount + " error" + (errorCount == 1 ? "" : "s"));
-//				errorHandler.getErrors().add(0, "Total found " + errorHandler.getErrorCount() + " error(s)");
 				return errorHandler.getErrors();
 			}
 		} catch (SAXException saxe) {

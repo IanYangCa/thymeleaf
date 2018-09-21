@@ -2,14 +2,10 @@ package hp.hpfb.web.service.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
-import java.net.URI;
+import java.math.BigInteger;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -23,6 +19,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.AbstractMockMvcTest;
+import hp.hpfb.web.exception.SplException;
+import hp.hpfb.web.model.Errors;
+import hp.hpfb.web.model.FailedAssert;
+import hp.hpfb.web.model.Parameters;
+import hp.hpfb.web.model.Report;
+import hp.hpfb.web.model.ReportMessage;
 
 public class TestFiles extends AbstractMockMvcTest {
 
@@ -30,24 +32,17 @@ public class TestFiles extends AbstractMockMvcTest {
 	private Utilities utilities;
 	
 	String dir = "";
-	@Test
+//	@Test
 	public void findFile() {
-//		Path root = Paths.get(dir);
-//		List<Path> list;
 		try {
-//			list = getFiles(root).collect(Collectors.toList());
-//			for(Path p : list) {
-//				System.out.println(p);
-//			}
 			File file = utilities.findXmlFile(utilities.UPLOADED_FOLDER);
 			System.out.println("file name: " + file.getPath());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	@Test
+//	@Test
 	public void checkXmlChildren() {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -72,16 +67,14 @@ public class TestFiles extends AbstractMockMvcTest {
 			}
 			System.out.println("Size: " + nodes.getLength());
 		} catch (SAXException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 //	@Test
-	public void testRenderXml() throws URISyntaxException {
+	public void testRenderXml() throws URISyntaxException, SplException {
 		String xmlFile = "e:/1.xml";
 		String xsltFileUrl = utilities.getXmlStylesheet(xmlFile);
 		String targetFilename = xsltFileUrl.substring(xsltFileUrl.lastIndexOf('/') + 1);
@@ -98,21 +91,58 @@ public class TestFiles extends AbstractMockMvcTest {
 					}
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			utilities.renderXml(utilities.UPLOADED_FOLDER + targetFilename, xmlFile, utilities.UPLOADED_FOLDER + "1Render.htm", null);
 		}
 	}
-	@Test
+//	@Test
 	public void testPathJoin() {
 		Path path = Paths.get(utilities.UPLOADED_FOLDER, Utilities.FILE_SEPARATOR, "1Render.htm");
 		File f = path.toFile();
 		System.out.println("Path: " + path.toString() + "file exists: " + f.exists());
 	}
-//	private Stream<Path> getFiles(Path p) throws IOException{
-//		PathMatcher filter = p.getFileSystem().getPathMatcher("glob:**/*.xml");
-//		return Files.list(p).filter(filter::matches).map(p::relativize);
-//		
-//	}
+//	@Test
+	public void testWriteParameters() {
+		Parameters p = new Parameters();
+		p.setContentStatus(BigInteger.valueOf(10));
+		p.setDisplayLanguage("name-eng");
+		p.setDoctype(BigInteger.valueOf(1));
+		p.setId("test id");
+		p.setLanguage("eng");
+		p.setTemplate(BigInteger.valueOf(2));
+		utilities.writeParameters(p);
+	}
+//	@Test
+	public void getParameters() {
+		Parameters p = utilities.getParameters(utilities.UPLOADED_FOLDER);
+		System.out.println("Display language: " + p.getDisplayLanguage());
+		System.out.println("Id: " + p.getId());
+		System.out.println("Language: " + p.getLanguage());
+		System.out.println("Content status: " + p.getContentStatus());
+		System.out.println("Doctype: " + p.getDoctype());
+		System.out.println("Template: " + p.getTemplate());
+		
+	}
+//	@Test
+	public void testReadWriteErrorXml() {
+		Errors errors = new Errors();
+		errors.setFailedAssert(new FailedAssert());
+		errors.getFailedAssert().setFlag("SYSTEM-1");
+		errors.getFailedAssert().setId("SPL-2-003");
+		errors.getFailedAssert().setTest("Check Schema File existed?");
+		utilities.writeSchemaErrorToReport0(utilities.UPLOADED_FOLDER, errors);
+		errors = utilities.readSchemaErrorFromReport0(utilities.UPLOADED_FOLDER);
+		System.out.println("Finished test!");
+	}
+	@Test
+	public void testReadReportXML() {
+		Report report = utilities.getReportMsgs(utilities.UPLOADED_FOLDER);
+		if(report != null && report.getReportMessage() != null) {
+			for(ReportMessage item : report.getReportMessage()) {
+				System.out.println("category: " + item.getCategory() + "  details: " + item.getDetails());
+			}
+		}
+		
+	}
 }

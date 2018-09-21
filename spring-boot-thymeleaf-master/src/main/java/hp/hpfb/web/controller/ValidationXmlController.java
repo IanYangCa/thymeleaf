@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.xml.sax.SAXException;
 
 import hp.hpfb.web.exception.SplException;
+import hp.hpfb.web.model.Errors;
+import hp.hpfb.web.model.FailedAssert;
 import hp.hpfb.web.model.Parameters;
 import hp.hpfb.web.model.Report;
-import hp.hpfb.web.model.ReportSchema;
+import hp.hpfb.web.model.ReportMessage;
 import hp.hpfb.web.service.XmlSchemaValidatingService;
 import hp.hpfb.web.service.utils.Utilities;
 
@@ -84,52 +87,86 @@ public class ValidationXmlController {
             
             
             List<String> errors;
-			try {
+        	//retrieve parameters from xml file to properties.xml
+        	try {
+//				utilities.renderXml(utilities.SRC_RULES_DIR + Utilities.PROPERTITIES + Utilities.XSLT, filename, outputDir + Utilities.PROPERTITIES + Utilities.XML, null);
+				utilities.generateProperties(filename, utilities.SRC_RULES_DIR, outputDir);
+			} catch (SplException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (RuntimeException e1 ) {
+				e1.printStackTrace();
+			}
+        	Boolean hasException = false;
+        	Parameters p = utilities.getParameters(outputDir);
+        	Map<String, String> params = new HashMap<String, String>();
+        	
+        	params.put("display-language",  p.getDisplayLanguage());
+        	params.put("oid_loc", utilities.OIDS_DIR);
+        	params.put("id",  file.getOriginalFilename());
+        	params.put("property-file", outputDir + Utilities.PROPERTITIES + Utilities.XML);
+        	params.put("rule-file",  utilities.SRC_RULES_DIR + "hc-rules" + Utilities.XML);
+        	try {
 				errors = service.verifyXml(filename);
 			} catch (SAXException e) {
+				hasException = false;
 				errors = new ArrayList<String>(1);
 				errors.add("Bad XML Format!");
 				errors.add("Read XML File:Parse Exception:Bad XML Format!");
 			} catch (RuntimeException e) {
+				hasException = false;
 				errors = new ArrayList<String>(1);
 				errors.add("Bad XML Format!");
 				errors.add("Read XML File:Parse Exception:Bad XML Format!");
 			} catch (SplException e) {
+				System.out.println("SplException: " + e.getErrorMsg());
+				hasException = true;
 				errors = new ArrayList<String>(1);
 				errors.add("Bad XML Format!");
-				errors.add("Read XML File:Parse Exception:" + e.getErrorMsg());
+        		Errors errs = new Errors();
+        		errs.setFailedAssert(new FailedAssert());
+        		String[] msgs = StringUtils.split(e.getErrorMsg(), ':');
+        		errs.getFailedAssert().setFlag(msgs[0]);
+        		errs.getFailedAssert().setId(msgs[1]);
+        		errs.getFailedAssert().setTest(msgs[2]);
+                utilities.writeSchemaErrorToReport0(outputDir, errs);
+				try {
+					utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
+				} catch (SplException e1) {
+					e1.printStackTrace();
+				}
 			}
             if( errors.size() > 0 ) {
-            	List<ReportSchema> reports = utilities.buildSchemaErrorReport(errors);
-                utilities.writeSchemaErrorToReport(outputDir, reports);
-                model.addAttribute("errorList", reports);
+            	if(! hasException) {
+	            	List<ReportMessage> reports = utilities.buildSchemaErrorReport(errors);
+	                utilities.writeSchemaErrorToReport(outputDir, reports);
+            	}
+				Report report = utilities.getReportMsgs(outputDir);
+				if(report.getReportMessage() != null && report.getReportMessage().size() > 0) {
+					model.addAttribute("errorList", report.getReportMessage());
+				}
             } else {
             	try {
-            	//build validate business rules
-            	utilities.rebuildBusinessRule();
-            	
-            	utilities.renderXml(utilities.SRC_RULES_DIR + "stripVestiges.xslt", filename, outputDir + "strip.xml", null);
-            	
-            	//retrieve parameters from xml file to properties.xml
-            	utilities.renderXml(utilities.SRC_RULES_DIR + Utilities.PROPERTITIES + Utilities.XSLT, filename, outputDir + Utilities.PROPERTITIES + Utilities.XML, null);
-            	Parameters p = utilities.getParameters(outputDir);
-            	Map<String, String> params = new HashMap<String, String>();
-            	
-            	params.put("display-language",  p.getDisplayLanguage());
-            	params.put("oid_loc", utilities.OIDS_DIR);
-            	params.put("id",  file.getOriginalFilename());
-            	params.put("property-file", outputDir + Utilities.PROPERTITIES + Utilities.XML);
-            	params.put("rule-file",  utilities.SRC_RULES_DIR + "hc-rules" + Utilities.XML);
-            	logger.info("oid_loc:" + utilities.OIDS_DIR);
-            	utilities.renderXml(utilities.DEST_RULE_DIR + Utilities.TARGET_BUSINESS_RULE_FILE + Utilities.XSLT, outputDir + "strip.xml", outputDir + "report0.xml", params);
-				utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
+	            	//build validate business rules
+	            	utilities.rebuildBusinessRule();
+	            	
+	            	utilities.renderXml(utilities.SRC_RULES_DIR + "stripVestiges.xslt", filename, outputDir + "strip.xml", null);
+	            	
+	            	logger.info("oid_loc:" + utilities.OIDS_DIR);
+	            	utilities.renderXml(utilities.DEST_RULE_DIR + Utilities.TARGET_BUSINESS_RULE_FILE + Utilities.XSLT, outputDir + "strip.xml", outputDir + "report0.xml", params);
+					utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
             	} catch ( SplException e) {
-           			errors = new ArrayList<String>(1);
-    				errors.add("Validation exception found!");
-    				errors.add("Read XML File:Parse Exception:" + e.getErrorMsg() + "!");
-                	List<ReportSchema> reports = utilities.buildSchemaErrorReport(errors);
-                    utilities.writeSchemaErrorToReport(outputDir, reports);
-                    model.addAttribute("errorList", reports);
+            		Errors errs = new Errors();
+            		errs.setFailedAssert(new FailedAssert());
+            		String[] msgs = StringUtils.split(e.getErrorMsg(), ':');
+            		errs.getFailedAssert().setFlag(msgs[0]);
+            		errs.getFailedAssert().setId(msgs[1]);
+                    utilities.writeSchemaErrorToReport0(outputDir, errs);
+					try {
+						utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
+					} catch (SplException e1) {
+						e1.printStackTrace();
+					}
             	} catch(Exception e) {
             		logger.error("Other Exception!" + e.getClass().getName());
             	}

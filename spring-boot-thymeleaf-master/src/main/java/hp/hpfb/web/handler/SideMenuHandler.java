@@ -20,7 +20,7 @@ public class SideMenuHandler {
     private SideMenuConfig sideMenuConfig;
     public List<SectionMenu> getSectionMenuList() {
     	List<SectionMenu> menuList = sideMenuConfig.getSectionMenuList();
-//		checkMenuLink(menuList);
+		checkMenuLink(menuList);
     	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     	if(auth != null && auth.isAuthenticated() && ! "anonymousUser".equals(auth.getName())) {
     		return menuList;
@@ -47,8 +47,8 @@ public class SideMenuHandler {
     private void checkMenuLink(List<SectionMenu> menus) {
 		for(SectionMenu main : menus) {
 			for(MenuLink sub : main.getMenuLinks()) {
-				if(! sub.getHref().startsWith("/IP602")) {
-					sub.setHref("/IP602" + sub.getHref());
+				if(! sub.getHref().startsWith("/spl-validator")) {
+					sub.setHref("/spl-validator" + sub.getHref());
 				} else {
 					return ;
 				}

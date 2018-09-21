@@ -40,13 +40,17 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "reportMessage"
 })
-@XmlRootElement(name = "report")
+@XmlRootElement(name = "report", namespace="")
 public class Report {
 
-    @XmlElement(name = "report_message", required = true)
+    @XmlElement(name = "report_message", required = true, namespace="")
     protected List<ReportMessage> reportMessage;
 
-    /**
+    public void setReportMessage(List<ReportMessage> reportMessage) {
+		this.reportMessage = reportMessage;
+	}
+
+	/**
      * Gets the value of the reportMessage property.
      * 
      * <p>

@@ -50,22 +50,22 @@ import javax.xml.bind.annotation.XmlType;
     "test",
     "location"
 })
-@XmlRootElement(name = "report_message")
+@XmlRootElement(name = "report_message", namespace="")
 public class ReportMessage {
 
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected String rule;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected String severity;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected String category;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected String label;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected String details;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected String test;
-    @XmlElement(required = true)
+    @XmlElement(required = true, namespace="")
     protected String location;
 
     /**

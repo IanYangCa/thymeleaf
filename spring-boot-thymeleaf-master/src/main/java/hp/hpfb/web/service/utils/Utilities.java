@@ -1,13 +1,11 @@
 package hp.hpfb.web.service.utils;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -27,6 +25,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -60,10 +59,13 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
+import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
+
 import hp.hpfb.web.exception.SplException;
+import hp.hpfb.web.model.Errors;
 import hp.hpfb.web.model.Parameters;
 import hp.hpfb.web.model.Report;
-import hp.hpfb.web.model.ReportSchema;
+import hp.hpfb.web.model.ReportMessage;
 
 @Component
 public class Utilities {
@@ -311,7 +313,7 @@ public class Utilities {
 			serializer.write(doc, output);
 			out.flush();
 			out.close();
-			logger.info("Finished generated HTML");
+			logger.info("Finished generated renderXml");
 		} catch(IllegalArgumentException e) {
 			logger.error("Error(Exception):  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
 			throw new SplException("IllegalArgumentException throwed");
@@ -376,37 +378,85 @@ public class Utilities {
 		return list != null && list.size() > 0 ? list.get(0).toFile() : null;
 	}
 
-	public List<ReportSchema> buildSchemaErrorReport(List<String> errors) {
-		List<ReportSchema> results = new ArrayList<ReportSchema>();
-		ReportSchema report = null;
+	public List<ReportMessage> buildSchemaErrorReport(List<String> errors) {
+		List<ReportMessage> results = new ArrayList<ReportMessage>();
+		ReportMessage report = null;
 		String[] msgs = null;
 		for (int i = 1; i < errors.size(); i++) {
-			report = new ReportSchema();
+			report = new ReportMessage();
 			msgs = errors.get(i).split(":");
-			report.setDetails(msgs[1] + ":" + msgs[2]);
-			report.setLocation(msgs[0]);
+			report.setCategory(msgs[0]);
+			report.getSeverity();
+			report.setDetails(msgs[1]);
+			report.setLocation(msgs[2]);
+			
 			results.add(report);
 		}
 		return results;
 	}
 
-	public Boolean writeSchemaErrorToReport(String dir, List<ReportSchema> reports) {
+	public Boolean writeSchemaErrorToReport(String dir, List<ReportMessage> reports) {
 		try {
 			File outFile = new File(dir + REPORT_XML);
-			Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile), "UTF-8"));
-			out.write(
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?><report xmlns:svrl=\"http://purl.oclc.org/dsdl/svrl\">");
-			for (ReportSchema report : reports) {
-				out.append(report.toXML());
-			}
-			out.append("</report>");
-			out.flush();
-			out.close();
+			JAXBContext jaxbContext = JAXBContext.newInstance(Report.class);
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+			// output pretty printed
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixMapper() {
+		        public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
+		            return "";
+		        }
+			});
+			Report report = new Report();
+			report.setReportMessage(reports);
+			jaxbMarshaller.marshal(report, outFile);
 		} catch (Exception e) {
 			logger.error("Error(Exception): " + StringUtils.join(e.getStackTrace(), '\n'));
 			return Boolean.FALSE;
 		}
 		return Boolean.TRUE;
+	}
+	public Report readSchemaErrorFromReport(String dir) {
+		try {
+			File inFile = new File(dir + REPORT_XML);
+			JAXBContext jaxbContext = JAXBContext.newInstance(Report.class);
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			Report reports = (Report) jaxbUnmarshaller.unmarshal(inFile);
+			return reports;
+		} catch (Exception e) {
+			logger.error("Error(Exception): " + StringUtils.join(e.getStackTrace(), '\n'));
+		}
+		return null;
+	}
+	public Boolean writeSchemaErrorToReport0(String dir, Errors errors) {
+		try {
+			File outFile = new File(dir + "report0.xml");
+			JAXBContext jaxbContext = JAXBContext.newInstance(Errors.class);
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+			// output pretty printed
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			jaxbMarshaller.marshal(errors, outFile);
+
+		} catch (Exception e) {
+			logger.error("Error(Exception): " + StringUtils.join(e.getStackTrace(), '\n'));
+			return Boolean.FALSE;
+		}
+		return Boolean.TRUE;
+	}
+	public Errors readSchemaErrorFromReport0(String dir) {
+		try {
+			File inFile = new File(dir + "report0.xml");
+			JAXBContext jaxbContext = JAXBContext.newInstance(Errors.class);
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			Errors errors = (Errors) jaxbUnmarshaller.unmarshal(inFile);
+			return errors;
+		} catch (Exception e) {
+			logger.error("Error(Exception): " + StringUtils.join(e.getStackTrace(), '\n'));
+		}
+		return null;
 	}
 
 	public Parameters getParameters(String path) {
@@ -416,6 +466,20 @@ public class Utilities {
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 			Parameters parameters = (Parameters) jaxbUnmarshaller.unmarshal(data);
 			return parameters;
+		} catch (JAXBException e) {
+			logger.error("Error(JAXBException): " + StringUtils.join(e.getStackTrace(), '\n'));
+		}
+		return new Parameters();
+	}
+	public Parameters writeParameters(Parameters parameters) {
+		try {
+			File parametersFile = new File(UPLOADED_FOLDER  + PROPERTITIES + XML);
+			JAXBContext jaxbContext = JAXBContext.newInstance(Parameters.class);
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			jaxbMarshaller.marshal(parameters, parametersFile);
+			
 		} catch (JAXBException e) {
 			logger.error("Error(JAXBException): " + StringUtils.join(e.getStackTrace(), '\n'));
 		}

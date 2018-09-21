@@ -193,5 +193,20 @@ public class ObjectFactory {
     public JAXBElement<String> createCategory(String value) {
         return new JAXBElement<String>(_Category_QNAME, String.class, null, value);
     }
+    /**
+     * Create an instance of {@link FailedAssert }
+     * 
+     */
+    public FailedAssert createFailedAssert() {
+        return new FailedAssert();
+    }
+
+    /**
+     * Create an instance of {@link Errors }
+     * 
+     */
+    public Errors createErrors() {
+        return new Errors();
+    }
 
 }

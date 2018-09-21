@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 
 import ca.canada.ised.wet.cdts.components.wet.breadcrumbs.AbstractMockMvcTest;
+import hp.hpfb.web.exception.SplException;
 import hp.hpfb.web.model.Parameters;
 import hp.hpfb.web.model.Report;
 import hp.hpfb.web.model.ReportMessage;
@@ -32,7 +33,7 @@ public class TestReadDataFromXml  extends AbstractMockMvcTest {
 	}
 
 	@Test
-	public void testGenerateParameters() {
+	public void testGenerateParameters() throws SplException {
 		utilities.renderXml(utilities.SRC_RULES_DIR + Utilities.PROPERTITIES + ".xslt", "src/test/resources/testFile.xml", utilities.UPLOADED_FOLDER + Utilities.PROPERTITIES + Utilities.XML, null);
 		Parameters p = utilities.getParameters(utilities.UPLOADED_FOLDER);
 		System.out.println("Display Language:" + p.getDisplayLanguage());
