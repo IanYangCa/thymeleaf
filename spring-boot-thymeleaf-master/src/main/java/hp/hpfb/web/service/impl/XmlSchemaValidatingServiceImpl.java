@@ -59,7 +59,7 @@ public class XmlSchemaValidatingServiceImpl implements XmlSchemaValidatingServic
 			}
 			if (schemaGrammar == null) {
 				System.out.println("schemaGrammar==null");
-				throw new SplException("SYSTEM-1:SPL-2-003:" + schemaFile);
+				throw new SplException("SPL-1:SPL-1-001:Validation Report Overview:" + schemaFile + ":Schema Issue: The schema location is incorrect.");
 			}
 
 			Resolver resolver = new Resolver();

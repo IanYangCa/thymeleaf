@@ -129,6 +129,13 @@ public class ValidationXmlController {
         		errs.getFailedAssert().setFlag(msgs[0]);
         		errs.getFailedAssert().setId(msgs[1]);
         		errs.getFailedAssert().setTest(msgs[2]);
+        		errs.getFailedAssert().setLocation(msgs[3]);
+        		if(msgs.length > 4) {
+        			errs.getFailedAssert().setText(msgs[4]);
+        			for(int i= 5; i < msgs.length; i++) {
+                		errs.getFailedAssert().setText(errs.getFailedAssert().getText() + ":" + msgs[i]);
+        			}
+        		}
                 utilities.writeSchemaErrorToReport0(outputDir, errs);
 				try {
 					utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
