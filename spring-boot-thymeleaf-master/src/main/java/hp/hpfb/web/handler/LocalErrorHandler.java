@@ -20,7 +20,7 @@ public class LocalErrorHandler implements ErrorHandler {
 	 */
 	public void error(SAXParseException ex) {
 		errors.add("At line " + ex.getLineNumber() + " Error: " + ex.getMessage());
-//		System.err.println(ex.getMessage());
+		System.err.println("!!!Error:" + ex.getMessage());
 		errorCount++;
 	}
 
@@ -32,7 +32,7 @@ public class LocalErrorHandler implements ErrorHandler {
 	 */
 	public void fatalError(SAXParseException ex) {
 		errors.add("At line " + ex.getLineNumber() + " of " + ex.getMessage() + '\n');
-//		System.err.println(ex.getMessage());
+		System.err.println("!!!Fatal: " + ex.getMessage());
 		errorCount++;
 	}
 
@@ -44,7 +44,7 @@ public class LocalErrorHandler implements ErrorHandler {
 	 */
 	public void warning(SAXParseException ex) {
 		System.err.println("At line " + ex.getLineNumber() + " Warning:  " + ex.getMessage() + '\n');
-//		System.err.println(ex.getMessage());
+		System.err.println("!!!Warning: " + ex.getMessage());
 	}
 
 	/**

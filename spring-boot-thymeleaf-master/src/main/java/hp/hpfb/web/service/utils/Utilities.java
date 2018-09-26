@@ -378,17 +378,34 @@ public class Utilities {
 		return list != null && list.size() > 0 ? list.get(0).toFile() : null;
 	}
 
-	public List<ReportMessage> buildSchemaErrorReport(List<String> errors) {
+	public List<ReportMessage> buildSchemaErrorReport(List<String> errors,  String filename, String outputDir) {
 		List<ReportMessage> results = new ArrayList<ReportMessage>();
 		ReportMessage report = null;
 		String[] msgs = null;
-		for (int i = 1; i < errors.size(); i++) {
+		if(errors.size() == 1) {
 			report = new ReportMessage();
-			msgs = errors.get(i).split(":");
-			report.setCategory(msgs[0]);
-			report.getSeverity();
-			report.setDetails(msgs[1]);
-			report.setLocation(msgs[2]);
+			Parameters parameter = getParameters(outputDir);
+			report.setDetails(String.format(report.getDetails(), filename, parameter.getDoctype(), parameter.getTemplate(), parameter.getContentStatus()));
+			results.add(report);
+		}
+		for (int i = 0; i < errors.size(); i++) {
+			report = new ReportMessage();
+			if(errors.get(i).indexOf(" Error: ") > -1) {
+				msgs = errors.get(i).split(" Error:");
+				report.setRule("SYSTEM-0");
+				report.setCategory("System Error");
+				report.setLabel("An uncharacterized system error occurred please contact HPFB support.");
+				report.setSeverity("Error");
+				report.setTest("Schema Validation");
+				report.setDetails(msgs[1]);
+				report.setLocation(msgs[0]);
+			} else {
+				msgs = errors.get(i).split(":");
+				report.setCategory(msgs[0]);
+				report.getSeverity();
+				report.setDetails(msgs[1]);
+				report.setLocation(msgs[2]);
+			}
 			
 			results.add(report);
 		}

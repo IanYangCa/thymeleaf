@@ -145,7 +145,7 @@ public class ValidationXmlController {
 			}
             if( errors.size() > 0 ) {
             	if(! hasException) {
-	            	List<ReportMessage> reports = utilities.buildSchemaErrorReport(errors);
+	            	List<ReportMessage> reports = utilities.buildSchemaErrorReport(errors, file.getOriginalFilename(), outputDir);
 	                utilities.writeSchemaErrorToReport(outputDir, reports);
             	}
 				Report report = utilities.getReportMsgs(outputDir);

@@ -54,19 +54,19 @@ import javax.xml.bind.annotation.XmlType;
 public class ReportMessage {
 
     @XmlElement(required = true, namespace="")
-    protected String rule;
+    protected String rule = "N/A";
     @XmlElement(required = true, namespace="")
-    protected String severity;
+    protected String severity = "Not Applicable";
     @XmlElement(required = true, namespace="")
-    protected String category;
+    protected String category = "N/A";
     @XmlElement(required = true, namespace="")
-    protected String label;
+    protected String label = "HC Validation Report";
     @XmlElement(required = true, namespace="")
-    protected String details;
+    protected String details = "HC Validation Report for document: %s (based on doctype: %s, template: %s with a document status of: %s).";
     @XmlElement(required = true, namespace="")
-    protected String test;
+    protected String test = "Validation Report Overview";
     @XmlElement(required = true, namespace="")
-    protected String location;
+    protected String location = "N/A";
 
     /**
      * Gets the value of the rule property.
