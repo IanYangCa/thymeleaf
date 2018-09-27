@@ -2,6 +2,7 @@ package hp.hpfb.web.service.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -144,7 +145,7 @@ public class Utilities {
 		}
 	}
 
-	public String getXSD(String filePath) throws SAXException {
+	public String getXSD(String filePath) throws SAXException, SplException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
 		DocumentBuilder builder;
@@ -161,6 +162,10 @@ public class Utilities {
 			XPathExpression expr = xpath.compile("//urn:hl7-org:v3:document");
 			Node node = (Node) expr.evaluate(doc, XPathConstants.NODE);
 			System.out.println("Node:" + node);
+			if(node == null) {
+				String xmlfile = filePath.substring(filePath.lastIndexOf(FILE_SEPARATOR)+1);
+				throw new SplException("SPL-3:SPL-3-001:Validation Report Overview:" + xmlfile + ":Data Issue: The data is incorrect.");
+			}
 			String attr = null;
 			for (int i = 0; i < node.getAttributes().getLength(); i++) {
 				attr = node.getAttributes().item(i).toString();
@@ -323,6 +328,9 @@ public class Utilities {
 		} catch(TransformerException e) {
 			logger.error("Error(Exception):  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
 			throw new SplException("TransformerException throwed");
+		} catch (FileNotFoundException e) {
+			String schemaFile = e.getMessage().substring(xmlFile.lastIndexOf(FILE_SEPARATOR) + 1);
+			throw new SplException("SPL-1:SPL-1-001:Validation Report Overview:" + schemaFile + ":Schema Issue: The schema location is incorrect.");
 		} catch (Exception e) {
 			logger.error("Error(Exception):  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
 			throw new SplException("Other Exception throwed");
@@ -488,9 +496,9 @@ public class Utilities {
 		}
 		return new Parameters();
 	}
-	public Parameters writeParameters(Parameters parameters) {
+	public Parameters writeParameters(String outputDir, Parameters parameters) {
 		try {
-			File parametersFile = new File(UPLOADED_FOLDER  + PROPERTITIES + XML);
+			File parametersFile = new File(outputDir  + PROPERTITIES + XML);
 			JAXBContext jaxbContext = JAXBContext.newInstance(Parameters.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -608,6 +616,28 @@ public class Utilities {
 				}
 			}
 			file.renameTo(newFile);
+		}
+	}
+	public void checkSystemDirectory() {
+		File file = new File(UPLOADED_FOLDER);
+		if(file == null || ! file.exists() || ! file.isDirectory()) {
+			logger.error("!!!!!!Please check the directory: " + UPLOADED_FOLDER);
+		}
+		file = new File(SRC_RULES_DIR);
+		if(file == null || ! file.exists() || ! file.isDirectory()) {
+			logger.error("!!!!!!Please check the directory: " + SRC_RULES_DIR);
+		}
+		file = new File(DEST_RULE_DIR);
+		if(file == null || ! file.exists() || ! file.isDirectory()) {
+			logger.error("!!!!!!Please check the directory: " + DEST_RULE_DIR);
+		}
+		file = new File(LOCAL_XSLT_DIR);
+		if(file == null || ! file.exists() || ! file.isDirectory()) {
+			logger.error("!!!!!!Please check the directory: " + LOCAL_XSLT_DIR);
+		}
+		file = new File(OIDS_DIR);
+		if(file == null || ! file.exists() || ! file.isDirectory()) {
+			logger.error("!!!!!!Please check the directory: " + OIDS_DIR);
 		}
 	}
 }

@@ -70,10 +70,14 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         	@Override
             public void sessionCreated(HttpSessionEvent se) {               
         		logger.info("Session Created with session id+" + se.getSession().getId());
-                File dir = new File(utilities.UPLOADED_FOLDER + se.getSession().getId());
-                if(! dir.exists()) {
-                	dir.mkdir();
-                }
+        		try {
+	                File dir = new File(utilities.UPLOADED_FOLDER + se.getSession().getId());
+	                if(! dir.exists()) {
+	                	dir.mkdir();
+	                }
+        		}catch(NullPointerException e) {
+        			logger.error("!!!!!!ERROR: Please check the directory: " + utilities.UPLOADED_FOLDER);
+        		}
             }
         	// This method will be automatically called when session destroyed
             @Override

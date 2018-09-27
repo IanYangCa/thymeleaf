@@ -35,6 +35,7 @@ public class ManageFilesController {
 
 	@RequestMapping(value="/admin/manageFiles", method=RequestMethod.GET)
     public String manageFiles(Model model, HttpServletRequest req){
+		utilities.checkSystemDirectory();
 		  return "manageFiles";
     }
     @RequestMapping("/admin/manageFiles/{sourceDir:.+}")
@@ -44,7 +45,7 @@ public class ManageFilesController {
 		try {
 			File dir = new File(root);
 			if(dir.isDirectory()) {
-				return Arrays.stream(dir.list()).map(item -> "/admin/manageFile/".concat("" + sourceDir).concat("/").concat(item)).collect(Collectors.toList()); 
+				return Arrays.stream(dir.list()).map(item -> req.getContextPath()+ "/admin/manageFile/".concat("" + sourceDir).concat("/").concat(item)).collect(Collectors.toList()); 
 			}
 	        return null;
 		} catch (Exception e) {
@@ -61,7 +62,11 @@ public class ManageFilesController {
 			if("delete".equalsIgnoreCase(action)) {
 				File file = new File(root + filename);
 				if(file != null && file.exists()) {
-					file.delete();
+					if(file.isDirectory()) {
+						utilities.removeDir(file);
+					} else {
+						file.delete();
+					}
 				}
 			} else {
 				res = loadAsResource(filename, root);
@@ -119,6 +124,9 @@ public class ManageFilesController {
 			break;
 		case 3:
 			root = utilities.OIDS_DIR;
+			break;
+		case 4:
+			root = utilities.UPLOADED_FOLDER;
 			break;
 		}
 		return root;

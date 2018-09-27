@@ -58,19 +58,19 @@ public class Parameters {
     @XmlElement(required = true, namespace="")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
-    protected String language;
+    protected String language = "eng";
     @XmlElement(name = "display-language", required = true, namespace="")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     @XmlSchemaType(name = "NCName")
-    protected String displayLanguage;
+    protected String displayLanguage = "name-eng";
     @XmlElement(required = true, namespace="")
-    protected BigInteger doctype;
+    protected BigInteger doctype = BigInteger.valueOf(-1);
     @XmlElement(required = true, namespace="")
-    protected BigInteger template;
+    protected BigInteger template = BigInteger.valueOf(-1);
     @XmlElement(required = true, namespace="")
-    protected String id;
+    protected String id = "Generated Properties Failed";
     @XmlElement(name = "content_status", required = true, namespace="")
-    protected BigInteger contentStatus;
+    protected BigInteger contentStatus = BigInteger.valueOf(-1);
 
     /**
      * Gets the value of the language property.

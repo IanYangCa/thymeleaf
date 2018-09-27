@@ -20,7 +20,7 @@ public class TestReadDataFromXml  extends AbstractMockMvcTest {
 	private Utilities utilities;
 	
 	@Test
-	public void testGetXSD() {
+	public void testGetXSD() throws SplException {
 		String result;
 		try {
 			result = utilities.getXSD("src/test/resources/testFile.xml");

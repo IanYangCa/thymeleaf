@@ -87,62 +87,52 @@ public class ValidationXmlController {
             
             
             List<String> errors;
+        	Boolean hasException = false;
+        	Map<String, String> params = new HashMap<String, String>();
+        	Parameters p = new Parameters();
         	//retrieve parameters from xml file to properties.xml
         	try {
-//				utilities.renderXml(utilities.SRC_RULES_DIR + Utilities.PROPERTITIES + Utilities.XSLT, filename, outputDir + Utilities.PROPERTITIES + Utilities.XML, null);
 				utilities.generateProperties(filename, utilities.SRC_RULES_DIR, outputDir);
 			} catch (SplException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				utilities.writeParameters(outputDir, new Parameters());
+	        	params.put("display-language",  p.getDisplayLanguage());
+	        	params.put("oid_loc", utilities.OIDS_DIR);
+	        	params.put("id",  file.getOriginalFilename());
+	        	params.put("property-file", outputDir + Utilities.PROPERTITIES + Utilities.XML);
+	        	params.put("rule-file",  utilities.SRC_RULES_DIR + "hc-rules" + Utilities.XML);
+				hasException = SplExceptionProcess(outputDir, e1, params);
 			} catch (RuntimeException e1 ) {
 				e1.printStackTrace();
 			}
-        	Boolean hasException = false;
-        	Parameters p = utilities.getParameters(outputDir);
-        	Map<String, String> params = new HashMap<String, String>();
+        	
+        	p = utilities.getParameters(outputDir);
         	
         	params.put("display-language",  p.getDisplayLanguage());
         	params.put("oid_loc", utilities.OIDS_DIR);
         	params.put("id",  file.getOriginalFilename());
         	params.put("property-file", outputDir + Utilities.PROPERTITIES + Utilities.XML);
         	params.put("rule-file",  utilities.SRC_RULES_DIR + "hc-rules" + Utilities.XML);
-        	try {
-				errors = service.verifyXml(filename);
-			} catch (SAXException e) {
-				hasException = false;
+
+        	if(hasException) {
 				errors = new ArrayList<String>(1);
-				errors.add("Bad XML Format!");
 				errors.add("Read XML File:Parse Exception:Bad XML Format!");
-			} catch (RuntimeException e) {
-				hasException = false;
-				errors = new ArrayList<String>(1);
-				errors.add("Bad XML Format!");
-				errors.add("Read XML File:Parse Exception:Bad XML Format!");
-			} catch (SplException e) {
-				System.out.println("SplException: " + e.getErrorMsg());
-				hasException = true;
-				errors = new ArrayList<String>(1);
-				errors.add("Bad XML Format!");
-        		Errors errs = new Errors();
-        		errs.setFailedAssert(new FailedAssert());
-        		String[] msgs = StringUtils.split(e.getErrorMsg(), ':');
-        		errs.getFailedAssert().setFlag(msgs[0]);
-        		errs.getFailedAssert().setId(msgs[1]);
-        		errs.getFailedAssert().setTest(msgs[2]);
-        		errs.getFailedAssert().setLocation(msgs[3]);
-        		if(msgs.length > 4) {
-        			errs.getFailedAssert().setText(msgs[4]);
-        			for(int i= 5; i < msgs.length; i++) {
-                		errs.getFailedAssert().setText(errs.getFailedAssert().getText() + ":" + msgs[i]);
-        			}
-        		}
-                utilities.writeSchemaErrorToReport0(outputDir, errs);
-				try {
-					utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
-				} catch (SplException e1) {
-					e1.printStackTrace();
-				}
-			}
+        	} else {
+            	try {
+    				errors = service.verifyXml(filename);
+    			} catch (SAXException e) {
+    				hasException = false;
+    				errors = new ArrayList<String>(1);
+    				errors.add("Read XML File:Parse Exception:Bad XML Format!");
+    			} catch (RuntimeException e) {
+    				hasException = false;
+    				errors = new ArrayList<String>(1);
+    				errors.add("Read XML File:Parse Exception:Bad XML Format!");
+    			} catch (SplException e) {
+    				hasException = SplExceptionProcess(outputDir, e, params);
+    				errors = new ArrayList<String>(1);
+    				errors.add("Read XML File:Parse Exception:Bad XML Format!");
+    			}
+        	}
             if( errors.size() > 0 ) {
             	if(! hasException) {
 	            	List<ReportMessage> reports = utilities.buildSchemaErrorReport(errors, file.getOriginalFilename(), outputDir);
@@ -163,17 +153,7 @@ public class ValidationXmlController {
 	            	utilities.renderXml(utilities.DEST_RULE_DIR + Utilities.TARGET_BUSINESS_RULE_FILE + Utilities.XSLT, outputDir + "strip.xml", outputDir + "report0.xml", params);
 					utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
             	} catch ( SplException e) {
-            		Errors errs = new Errors();
-            		errs.setFailedAssert(new FailedAssert());
-            		String[] msgs = StringUtils.split(e.getErrorMsg(), ':');
-            		errs.getFailedAssert().setFlag(msgs[0]);
-            		errs.getFailedAssert().setId(msgs[1]);
-                    utilities.writeSchemaErrorToReport0(outputDir, errs);
-					try {
-						utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
-					} catch (SplException e1) {
-						e1.printStackTrace();
-					}
+            		hasException = SplExceptionProcess(outputDir, e, params);
             	} catch(Exception e) {
             		logger.error("Other Exception!" + e.getClass().getName());
             	}
@@ -238,6 +218,29 @@ public class ValidationXmlController {
         return Paths.get(utilities.UPLOADED_FOLDER).resolve(filename);
     }
 
+    private boolean SplExceptionProcess(String outputDir, SplException e, Map<String, String> params) {
+		System.out.println("SplException: " + e.getErrorMsg());
+		Errors errs = new Errors();
+		errs.setFailedAssert(new FailedAssert());
+		String[] msgs = StringUtils.split(e.getErrorMsg(), ':');
+		errs.getFailedAssert().setFlag(msgs[0]);
+		errs.getFailedAssert().setId(msgs[1]);
+		errs.getFailedAssert().setTest(msgs[2]);
+		errs.getFailedAssert().setLocation(msgs[3]);
+		if(msgs.length > 4) {
+			errs.getFailedAssert().setText(msgs[4]);
+			for(int i= 5; i < msgs.length; i++) {
+        		errs.getFailedAssert().setText(errs.getFailedAssert().getText() + ":" + msgs[i]);
+			}
+		}
+        utilities.writeSchemaErrorToReport0(outputDir, errs);
+		try {
+			utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
+		} catch (SplException e1) {
+			e1.printStackTrace();
+		}
+        return true;
+    }
     public Stream<Path> loadAll(Path root){
     	
     	try {

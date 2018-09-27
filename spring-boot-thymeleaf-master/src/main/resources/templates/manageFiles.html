@@ -16,6 +16,7 @@
 							<option value="1">Business Rules Directory</option>
 							<option value="2">Current Rule Directory</option>
 							<option value="3">OIDS Directory</option>
+							<option value="4">UPLOAD Directory</option>
 						</select>
 					</span>
 				</div>
@@ -35,7 +36,7 @@
 		<script data-th-inline="javascript">
 		/*<![CDATA[*/
 		var url = [[@{/admin/manageFiles/}]];
-		var serverUrl = window.location;
+		var serverUrl = url.substring(0, url.length - 19);
 		jQuery().ready(function(){
 			$('#sourceDir').onChange($('#sourceDir'));
 	    });
@@ -44,8 +45,8 @@
 			$.getJSON(url + $(element).val(), function(data, status) {
 					if(data != null && data.length > 0){
 						$.each(data, function(index, value){
-							$('#filelist').append('<li class="mrgn-bttm-sm"> &nbsp;<a class="btn btn-danger btn-xs" href="' + value + '/delete" target="_blank">' + [[#{button.delete}]] 
-							+ '</a>&nbsp;<a class="btn btn-primary btn-xs" href=' + value + '/download>' + [[#{button.download}]] + '</a>&nbsp;-->' + value + '</li>');
+							$('#filelist').append('<li class="mrgn-bttm-sm"> &nbsp;<a class="btn btn-danger btn-xs" href="' + serverUrl + value + '/delete" target="_blank">' + [[#{button.delete}]] 
+							+ '</a>&nbsp;<a class="btn btn-primary btn-xs" href=' + serverUrl + value + '/download>' + [[#{button.download}]] + '</a>&nbsp;-->' + value + '</li>');
 						});
 					}
 				});
