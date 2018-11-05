@@ -111,11 +111,12 @@ public class TestFiles extends AbstractMockMvcTest {
 		p.setId("test id");
 		p.setLanguage("eng");
 		p.setTemplate(BigInteger.valueOf(2));
-		utilities.writeParameters(p);
+		utilities.writeObjectToXml(utilities.UPLOADED_FOLDER + "properties.xml", p);
 	}
 //	@Test
 	public void getParameters() {
-		Parameters p = utilities.getParameters(utilities.UPLOADED_FOLDER);
+//		Parameters p = utilities.getParameters(utilities.UPLOADED_FOLDER);
+		Parameters p = utilities.getObjectFromXml(Parameters.class, utilities.UPLOADED_FOLDER + Utilities.PROPERTITIES + Utilities.XML);
 		System.out.println("Display language: " + p.getDisplayLanguage());
 		System.out.println("Id: " + p.getId());
 		System.out.println("Language: " + p.getLanguage());
@@ -131,13 +132,13 @@ public class TestFiles extends AbstractMockMvcTest {
 		errors.getFailedAssert().setFlag("SYSTEM-1");
 		errors.getFailedAssert().setId("SPL-2-003");
 		errors.getFailedAssert().setTest("Check Schema File existed?");
-		utilities.writeSchemaErrorToReport0(utilities.UPLOADED_FOLDER, errors);
-		errors = utilities.readSchemaErrorFromReport0(utilities.UPLOADED_FOLDER);
+		utilities.writeObjectToXml(utilities.UPLOADED_FOLDER + "report0.xml", errors);
+		errors = utilities.getObjectFromXml(Errors.class, utilities.UPLOADED_FOLDER + "report0.xml");
 		System.out.println("Finished test!");
 	}
 	@Test
 	public void testReadReportXML() {
-		Report report = utilities.getReportMsgs(utilities.UPLOADED_FOLDER);
+		Report report = utilities.getObjectFromXml(Report.class, utilities.UPLOADED_FOLDER); //utilities.getReportMsgs(utilities.UPLOADED_FOLDER);
 		if(report != null && report.getReportMessage() != null) {
 			for(ReportMessage item : report.getReportMessage()) {
 				System.out.println("category: " + item.getCategory() + "  details: " + item.getDetails());

@@ -19,8 +19,6 @@ public class MenuLink implements Serializable {
 	 */
 	private static final long serialVersionUID = 7573762418096331951L;
 
-	/** The displayed menu text. */
-    private String text;
 
     /** The internal menu text en. */
     private String textEn;
@@ -47,15 +45,6 @@ public class MenuLink implements Serializable {
         } else {
             return textFr;
         }
-    }
-
-    /**
-     * Sets the menu text.
-     *
-     * @param text the new text
-     */
-    public void setText(String text) {
-        this.text = text;
     }
 
     /**

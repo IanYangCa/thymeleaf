@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://purl.oclc.org/dsdl/svrl" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+  <xs:element name="errors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="svrl:failed-assert"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="failed-assert">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="svrl:text"/>
+      </xs:sequence>
+      <xs:attribute name="flag" use="required" type="xs:NCName"/>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+      <xs:attribute name="location" use="required" type="xs:NCName"/>
+      <xs:attribute name="test" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="text" type="xs:string"/>
+</xs:schema>

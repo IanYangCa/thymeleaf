@@ -66,11 +66,21 @@ public class RenderXmlController {
 		if(file != null) {
 			try {
 				String xsltFilename = utilities.getXmlStylesheet(outputDir + xmlFilename);
-				String version = xsltFilename.substring(0, xsltFilename.lastIndexOf('/'));
-				version = version.substring(version.lastIndexOf('/') + 1);
-				xsltFilename = xsltFilename.substring(xsltFilename.lastIndexOf('/') + 1);
-				if(renderXml != null && renderXml.getLocal() != null && renderXml.getLocal()) {
-					utilities.renderXml(utilities.LOCAL_XSLT_DIR + version + Utilities.FILE_SEPARATOR + xsltFilename, outputDir + xmlFilename, outputDir + "temp.htm", null);
+				String version = "";
+				if(xsltFilename.lastIndexOf('/') > -1) {
+					version = xsltFilename.substring(0, xsltFilename.lastIndexOf('/'));
+					xsltFilename = xsltFilename.substring(xsltFilename.lastIndexOf('/') + 1);
+				}
+				if(version.lastIndexOf('/') > -1) {
+					version = version.substring(version.lastIndexOf('/') + 1);
+				}
+				if(StringUtils.isBlank(version) || "/".equals(version) || ".".equals(version) ||
+						renderXml != null && renderXml.getLocal() != null && renderXml.getLocal()) {
+					if(StringUtils.isBlank(version) || "/".equals(version) || ".".equals(version)) {
+						utilities.renderXml(utilities.LOCAL_XSLT_DIR + xsltFilename, outputDir + xmlFilename, outputDir + "temp.htm", null);
+					} else {
+						utilities.renderXml(utilities.LOCAL_XSLT_DIR + version + Utilities.FILE_SEPARATOR + xsltFilename, outputDir + xmlFilename, outputDir + "temp.htm", null);
+					}
 				} else {
 					String xsltFileUrl = utilities.getXmlStylesheet(outputDir + xmlFilename);
 					if(StringUtils.isNotBlank(xsltFileUrl)) {

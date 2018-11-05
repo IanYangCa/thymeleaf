@@ -19,7 +19,7 @@ public class TestReadDataFromXml  extends AbstractMockMvcTest {
 	@Autowired
 	private Utilities utilities;
 	
-	@Test
+//	@Test
 	public void testGetXSD() throws SplException {
 		String result;
 		try {
@@ -32,10 +32,11 @@ public class TestReadDataFromXml  extends AbstractMockMvcTest {
 		}
 	}
 
-	@Test
+//	@Test
 	public void testGenerateParameters() throws SplException {
 		utilities.renderXml(utilities.SRC_RULES_DIR + Utilities.PROPERTITIES + ".xslt", "src/test/resources/testFile.xml", utilities.UPLOADED_FOLDER + Utilities.PROPERTITIES + Utilities.XML, null);
-		Parameters p = utilities.getParameters(utilities.UPLOADED_FOLDER);
+		Parameters p = utilities.getObjectFromXml(Parameters.class, utilities.UPLOADED_FOLDER + Utilities.PROPERTITIES + Utilities.XML);
+//		Parameters p = utilities.getParameters(utilities.UPLOADED_FOLDER);
 		System.out.println("Display Language:" + p.getDisplayLanguage());
 		System.out.println("ID:" + p.getId());
 		System.out.println("Language:" + p.getLanguage());
@@ -43,9 +44,9 @@ public class TestReadDataFromXml  extends AbstractMockMvcTest {
 		System.out.println("Template:" + p.getTemplate());
 		System.out.println("Content Status:" + p.getContentStatus());
 	}
-	@Test
+//	@Test
 	public void testReadReport() {
-		Report p = utilities.getReportMsgs(utilities.UPLOADED_FOLDER);
+		Report p = utilities.getObjectFromXml(Report.class, utilities.UPLOADED_FOLDER + "report.xml");
 		if(p.getReportMessage() != null && p.getReportMessage().size() >0 ) {
 			for(ReportMessage r : p.getReportMessage()) {
 				System.out.println("Category:" + r.getCategory());
@@ -57,6 +58,17 @@ public class TestReadDataFromXml  extends AbstractMockMvcTest {
 				System.out.println("Test:" + r.getTest());
 			}
 		}
+	}
+	@Test
+	public void testWriteXML() {
+		utilities.writeObjectToXml(utilities.UPLOADED_FOLDER + "properties.xml", new Parameters());
+		Parameters p = utilities.getObjectFromXml(Parameters.class, utilities.UPLOADED_FOLDER + "properties.xml");
+		System.out.println("" + p.getDisplayLanguage());
+		System.out.println("" + p.getId());
+		System.out.println("" + p.getLanguage());
+		System.out.println("" + p.getContentStatus());
+		System.out.println("" + p.getDoctype());
+		System.out.println("" + p.getTemplate());
 	}
 
 }

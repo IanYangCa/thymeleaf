@@ -94,7 +94,7 @@ public class ValidationXmlController {
         	try {
 				utilities.generateProperties(filename, utilities.SRC_RULES_DIR, outputDir);
 			} catch (SplException e1) {
-				utilities.writeParameters(outputDir, new Parameters());
+				utilities.writeObjectToXml(outputDir + Utilities.PROPERTITIES + Utilities.XML, new Parameters());
 	        	params.put("display-language",  p.getDisplayLanguage());
 	        	params.put("oid_loc", utilities.OIDS_DIR);
 	        	params.put("id",  file.getOriginalFilename());
@@ -105,7 +105,7 @@ public class ValidationXmlController {
 				e1.printStackTrace();
 			}
         	
-        	p = utilities.getParameters(outputDir);
+        	p = utilities.getObjectFromXml(Parameters.class, outputDir + Utilities.PROPERTITIES + Utilities.XML); //utilities.getParameters(outputDir);
         	
         	params.put("display-language",  p.getDisplayLanguage());
         	params.put("oid_loc", utilities.OIDS_DIR);
@@ -136,9 +136,11 @@ public class ValidationXmlController {
             if( errors.size() > 0 ) {
             	if(! hasException) {
 	            	List<ReportMessage> reports = utilities.buildSchemaErrorReport(errors, file.getOriginalFilename(), outputDir);
-	                utilities.writeSchemaErrorToReport(outputDir, reports);
+//	                utilities.writeSchemaErrorToReport(outputDir, reports);
+	                utilities.writeObjectToXml(outputDir + Utilities.REPORT_XML, reports);
             	}
-				Report report = utilities.getReportMsgs(outputDir);
+//				Report report = utilities.getReportMsgs(outputDir);
+				Report report = utilities.getObjectFromXml(Report.class, outputDir + Utilities.REPORT_XML);
 				if(report.getReportMessage() != null && report.getReportMessage().size() > 0) {
 					model.addAttribute("errorList", report.getReportMessage());
 				}
@@ -157,7 +159,7 @@ public class ValidationXmlController {
             	} catch(Exception e) {
             		logger.error("Other Exception!" + e.getClass().getName());
             	}
-				Report report = utilities.getReportMsgs(outputDir);
+				Report report = utilities.getObjectFromXml(Report.class, outputDir + Utilities.REPORT_XML); //utilities.getReportMsgs(outputDir);
 				if(report.getReportMessage() != null && report.getReportMessage().size() > 0) {
 					model.addAttribute("errorList", report.getReportMessage());
 				}
@@ -233,7 +235,8 @@ public class ValidationXmlController {
         		errs.getFailedAssert().setText(errs.getFailedAssert().getText() + ":" + msgs[i]);
 			}
 		}
-        utilities.writeSchemaErrorToReport0(outputDir, errs);
+//        utilities.writeSchemaErrorToReport0(outputDir, errs);
+        utilities.writeObjectToXml(outputDir + "report0.xml", errs);
 		try {
 			utilities.renderXml(utilities.SRC_RULES_DIR + "report.xslt", outputDir + "report0.xml", outputDir + "report.xml", params );
 		} catch (SplException e1) {

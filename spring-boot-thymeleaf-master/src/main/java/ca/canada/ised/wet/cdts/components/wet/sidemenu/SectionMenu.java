@@ -19,8 +19,6 @@ public class SectionMenu implements Serializable {
 	 */
 	private static final long serialVersionUID = 3870422089394027735L;
 
-	private String sectionName;
-
 	/** The internal section name en. */
 	private String sectionNameEn;
 
@@ -41,16 +39,6 @@ public class SectionMenu implements Serializable {
 		} else {
 			return sectionNameFr;
 		}
-	}
-
-	/**
-	 * Sets the section name.
-	 *
-	 * @param sectionName
-	 *            the new section name
-	 */
-	public void setSectionName(String sectionName) {
-		this.sectionName = sectionName;
 	}
 
 	/**

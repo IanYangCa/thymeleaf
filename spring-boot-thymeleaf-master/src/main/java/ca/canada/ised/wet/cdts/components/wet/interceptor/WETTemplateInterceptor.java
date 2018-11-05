@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -104,7 +105,9 @@ public class WETTemplateInterceptor extends HandlerInterceptorAdapter {
     			response.setContentType(MediaType.TEXT_HTML.toString());
     			response.setCharacterEncoding("UTF-8");
     			PrintWriter writer = response.getWriter();
-    			Files.lines(path, StandardCharsets.UTF_8).forEach(writer:: print);
+    			Stream<String> stream = Files.lines(path, StandardCharsets.UTF_8);
+    			stream.forEach(writer:: print);
+    			stream.close();
     			writer.flush();
     			writer.close();
     			return false;

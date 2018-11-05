@@ -60,12 +60,8 @@ import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
-import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
-
 import hp.hpfb.web.exception.SplException;
-import hp.hpfb.web.model.Errors;
 import hp.hpfb.web.model.Parameters;
-import hp.hpfb.web.model.Report;
 import hp.hpfb.web.model.ReportMessage;
 
 @Component
@@ -312,12 +308,14 @@ public class Utilities {
 			if (target != null && target.exists()) {
 				target.delete();
 			}
-			PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(targetFile), UTF_8));
+			FileOutputStream fout = new FileOutputStream(targetFile);
+			PrintWriter out = new PrintWriter(new OutputStreamWriter(fout, UTF_8));
 			output.setEncoding(UTF_8);
 			output.setCharacterStream(out);
 			serializer.write(doc, output);
 			out.flush();
 			out.close();
+			fout.close();
 			logger.info("Finished generated renderXml");
 		} catch(IllegalArgumentException e) {
 			logger.error("Error(Exception):  " + StringUtils.join(e.getStackTrace(), SEPARATOR));
@@ -392,7 +390,7 @@ public class Utilities {
 		String[] msgs = null;
 		if(errors.size() == 1) {
 			report = new ReportMessage();
-			Parameters parameter = getParameters(outputDir);
+			Parameters parameter = getObjectFromXml(Parameters.class, outputDir + PROPERTITIES + XML); //getParameters(outputDir);
 			report.setDetails(String.format(report.getDetails(), filename, parameter.getDoctype(), parameter.getTemplate(), parameter.getContentStatus()));
 			results.add(report);
 		}
@@ -420,109 +418,71 @@ public class Utilities {
 		return results;
 	}
 
-	public Boolean writeSchemaErrorToReport(String dir, List<ReportMessage> reports) {
+	public <T> T getObjectFromXml(Class<T> T, String filePath){
 		try {
-			File outFile = new File(dir + REPORT_XML);
-			JAXBContext jaxbContext = JAXBContext.newInstance(Report.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-			// output pretty printed
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NamespacePrefixMapper() {
-		        public String getPreferredPrefix(String namespaceUri, String suggestion, boolean requirePrefix) {
-		            return "";
-		        }
-			});
-			Report report = new Report();
-			report.setReportMessage(reports);
-			jaxbMarshaller.marshal(report, outFile);
-		} catch (Exception e) {
-			logger.error("Error(Exception): " + StringUtils.join(e.getStackTrace(), '\n'));
-			return Boolean.FALSE;
-		}
-		return Boolean.TRUE;
-	}
-	public Report readSchemaErrorFromReport(String dir) {
-		try {
-			File inFile = new File(dir + REPORT_XML);
-			JAXBContext jaxbContext = JAXBContext.newInstance(Report.class);
+			File data = new File(filePath);
+			JAXBContext jaxbContext = JAXBContext.newInstance(T);
 			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			Report reports = (Report) jaxbUnmarshaller.unmarshal(inFile);
-			return reports;
-		} catch (Exception e) {
-			logger.error("Error(Exception): " + StringUtils.join(e.getStackTrace(), '\n'));
-		}
-		return null;
-	}
-	public Boolean writeSchemaErrorToReport0(String dir, Errors errors) {
-		try {
-			File outFile = new File(dir + "report0.xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(Errors.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-			// output pretty printed
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-			jaxbMarshaller.marshal(errors, outFile);
-
-		} catch (Exception e) {
-			logger.error("Error(Exception): " + StringUtils.join(e.getStackTrace(), '\n'));
-			return Boolean.FALSE;
-		}
-		return Boolean.TRUE;
-	}
-	public Errors readSchemaErrorFromReport0(String dir) {
-		try {
-			File inFile = new File(dir + "report0.xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(Errors.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			Errors errors = (Errors) jaxbUnmarshaller.unmarshal(inFile);
-			return errors;
-		} catch (Exception e) {
-			logger.error("Error(Exception): " + StringUtils.join(e.getStackTrace(), '\n'));
-		}
-		return null;
-	}
-
-	public Parameters getParameters(String path) {
-		try {
-			File data = new File(path + File.separator + PROPERTITIES + XML);
-			JAXBContext jaxbContext = JAXBContext.newInstance(Parameters.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			Parameters parameters = (Parameters) jaxbUnmarshaller.unmarshal(data);
-			return parameters;
+			@SuppressWarnings("unchecked")
+			T result = (T) jaxbUnmarshaller.unmarshal(data);
+			return result;
 		} catch (JAXBException e) {
 			logger.error("Error(JAXBException): " + StringUtils.join(e.getStackTrace(), '\n'));
 		}
-		return new Parameters();
+		return null;
 	}
-	public Parameters writeParameters(String outputDir, Parameters parameters) {
+	public <T> void writeObjectToXml(String filePath, T obj) {
 		try {
-			File parametersFile = new File(outputDir  + PROPERTITIES + XML);
-			JAXBContext jaxbContext = JAXBContext.newInstance(Parameters.class);
+			File objFile = new File(filePath);
+			JAXBContext jaxbContext = JAXBContext.newInstance(obj.getClass());
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-			jaxbMarshaller.marshal(parameters, parametersFile);
+			jaxbMarshaller.marshal(obj, objFile);
 			
 		} catch (JAXBException e) {
 			logger.error("Error(JAXBException): " + StringUtils.join(e.getStackTrace(), '\n'));
 		}
-		return new Parameters();
 	}
+//	public Parameters getParameters(String path) {
+//		try {
+//			File data = new File(path + File.separator + PROPERTITIES + XML);
+//			JAXBContext jaxbContext = JAXBContext.newInstance(Parameters.class);
+//			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+//			Parameters parameters = (Parameters) jaxbUnmarshaller.unmarshal(data);
+//			return parameters;
+//		} catch (JAXBException e) {
+//			logger.error("Error(JAXBException): " + StringUtils.join(e.getStackTrace(), '\n'));
+//		}
+//		return new Parameters();
+//	}
+//	public Parameters writeParameters(String outputDir, Parameters parameters) {
+//		try {
+//			File parametersFile = new File(outputDir  + PROPERTITIES + XML);
+//			JAXBContext jaxbContext = JAXBContext.newInstance(Parameters.class);
+//			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+//			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//
+//			jaxbMarshaller.marshal(parameters, parametersFile);
+//			
+//		} catch (JAXBException e) {
+//			logger.error("Error(JAXBException): " + StringUtils.join(e.getStackTrace(), '\n'));
+//		}
+//		return new Parameters();
+//	}
 
-	public Report getReportMsgs(String path) {
-		try {
-			File data = new File(path + File.separator + REPORT_XML);
-			JAXBContext jaxbContext = JAXBContext.newInstance(Report.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			Report report = (Report) jaxbUnmarshaller.unmarshal(data);
-			return report;
-		} catch (JAXBException e) {
-			logger.error("Error(JAXBException): " + StringUtils.join(e.getStackTrace(), '\n'));
-		}
-		return new Report();
-	}
+//	public Report getReportMsgs(String path) {
+//		try {
+//			File data = new File(path + File.separator + REPORT_XML);
+//			JAXBContext jaxbContext = JAXBContext.newInstance(Report.class);
+//			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+//			Report report = (Report) jaxbUnmarshaller.unmarshal(data);
+//			return report;
+//		} catch (JAXBException e) {
+//			logger.error("Error(JAXBException): " + StringUtils.join(e.getStackTrace(), '\n'));
+//		}
+//		return new Report();
+//	}
 
 	public String getXmlStylesheet(String xmlFile) {
 		String result = StringUtils.EMPTY;
